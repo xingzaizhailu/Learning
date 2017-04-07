@@ -1,0 +1,35 @@
+returns are all FLOAT
+
+div() & rem() return integer
+
+round()
+trunc(3.58) # -> 3
+
+#check for a valua type
+is_boolean(true) #-> true
+is_boolean(1)    #-> false
+
+h function/operators/...
+
+Atom --> :
+
+IO.puts/1
+
+Strings are internally binaries, sequences of bytes
+
+byte_size("hello") -> 
+String.length/1    ->
+String.upcase("hello")
+String.  tab键查看其下方法
+
+is_function()
+is_funciotn(func_name, num) # check if f is a f of num arguments
+
+i/1  # to retrieve info about data.(term/data/description/...)
+
+elixir data types are immutable
+
+number < atom < reference < function < port < pid <tuple < map < list < bitstring
+
+
+
