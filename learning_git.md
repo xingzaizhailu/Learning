@@ -1,10 +1,10 @@
 # Basic Git
 ## 建库：
-使用git init命令初始化一个Git仓库
+使用`git init`命令初始化一个Git仓库
 
 ## 添加文件到Git仓库：
-1. 使用命令git add <file>，注意，可反复多次使用，添加多个文件；
-2. 使用命令git commit，完成。(-m参数添加描述信息）
+1. 使用命令`git add <file>`，注意，可反复多次使用，添加多个文件；
+2. 使用命令`git commit`，完成。(`-m`参数添加描述信息）
 
 ## 操作
 ### `git status`
@@ -121,7 +121,7 @@ Git鼓励大量使用分支：
 
 ## 特殊忽略文件
 `.gitignore`
-现成[配置文件][ignore_config](http://github.com/github/gitignore)，自行组合使用  
+现成[配置文件](http://github.com/github/gitignore)，自行组合使用  
 windows下采用另存为保存.gitignore文件
 
 
