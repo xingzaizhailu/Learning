@@ -1,4 +1,5 @@
-# Programming [Elixir](http://elixir-lang.org/) 1.3
+# Programming [Elixir](http://elixir-lang.org/ "Official Website") 1.3
+> Elixir runs on  the [Erlang]() VM.
 ## Chap 2: Pattern Matching
 ## Chap 3: Immutability
 Elixir data types are immutable  
@@ -213,16 +214,27 @@ or
          parameter-list -> body ...
     end
 
-or $ elixir fileName.exs
+or in $ elixir fileName.exs  
 
-### Functions can return functions:  
+### One Function, Multiple Bodies
+Each clause in the func def must have the same number of parameters.  
+
+    iex> handle_open = fn
+    ...> {:ok, file} -> "Read data: #{IO.read(file, :line)}"
+    ...> {_, error}  -> "Error: #{:file.format_error(error)}"
+    ...> end
+
+### Functions can return functions
+The dot indicate the function call. Parentheses are still needed when function takes no argument.
 
     iex> fun1 = fn -> (fn -> "hello" end) end
     iex> fun2 = fun1.()
+    iex> fun2.()
     Hello
     :ok
 
-### Closure:
+### Funcs Remember Their Original Environment
+It is because funcs in Elixir automatically carry with them the bindings of variables in the scope in which they are defined(Closure).  
 
     iex> add_n = fn n -> (fn other -> n + other end) end
     iex> add_two = add_n.(2)
@@ -230,27 +242,90 @@ or $ elixir fileName.exs
     iex> add_two.(3) # 5
     iex> add_five.(7) # 12
 
-### 将函数作为参数来传递：  
-
+### Passing Functions As Arguments
     times_2 = fn n -> n * 2 end
     apply = fn（func, value) -> func.(value) end
     apply.(times_2, 6) #12
 
-### &运算符：将函数传递给其他函数极好的方式  
+### Pinned Values and Func Parameters
+Pin operator(^): allow us to use the current value of a variable in a pattern.
+
+### & Notation：将函数传递给其他函数极好的方式  
 
     square = &(&1 * &1)
-    speak = &(IO.puts(&1))  # IO.puts/1
-    speak.("hello") # hello \n :ok
+    speak = &(IO.puts(&1))                      # IO.puts/1
+    speak.("hello")                             # hello \n :ok
     divrem = &{ div(&1, &2), rem(&1, &2) }
-    divrem.(13,5) # {2, 3}
+    divrem.(13,5)                               # {2, 3}
 
-    len = &length/1 # &:erlang.length/1
-    len.([1,3,5,7]) # 4
-    l = &Enum.count/1 # &Enum.count/1
-    l.([1, 2, 3, 4]) # 4
+    len = &length/1                             # &:erlang.length/1
+    len.([1,3,5,7])                             # 4
 
+    l = &Enum.count/1                           # &Enum.count/1
+    l.([1, 2, 3, 4])                            # 4
 
+    m = &Kernel.min/2                           # &:erlang.min/2    This is an alias for the Erlang func
+    m.(99, 88)                                  # 88
 
+## Chap 6: Modules and Named Functions
+Named functions must be written inside modules.  
+### Compiling a Module
+1. At the command line   
+Give iex a source file's name, and it compiles and loads the file before it displays a prompt.
+
+    $ iex times.exs
+    iex> Times.double(4)
+    8
+2. In iex   
+
+    iex> c "times.exs"
+    [Times]
+    iex> Times.double(4)
+    8
+
+### The Func's Body is a Block
+    def double(n), do: n * 2
+    def greet(greeting, name), do: (
+      IO.puts greeting
+      IO.puts "How're you doing, #{name}?"
+    )
+
+### Function Calls and Pattern Matching
+    defmodule Factorial do              # but this can be significantly improved by tail recursion
+      def of(0), do: 1
+      def of(n), do: n * fo(n - 1)
+    end
+
+    iex> Factorial.of(3)
+    6
+
+### Guard Clauses
+    def ...() when ... do
+    end
+#### Guard-Clause Limitations
+1. Comparison operations
+    - `==`, `!=`, `===`, `!==`, `>`, `<`, `<=`, `>=`
+2. Boolean and negation operators
+    - `or`, `and`, `not`, `!` 
+    - Note that `||` and `&&` are **not** allowed.
+3. Arighmetic operators
+    - `+`, `-`, `*`, `/`
+4. Join operators
+    - `<>` and `++`, as long as the left side is a literal
+5. The `in` operator
+    - Membership in a collection or range
+6. Type-check functions(return true or false)
+    - `is_atom is_binary is_bitstring is_boolean is_exception is_float is_integer`
+    - `is_list is_map is_number is_pid is_port is_record is_reference is_tuple`
+7. Other functions(return values)
+    - `abs(number) bit_size(bitstring) byte_size(bitstring) div(num, num) elem(tuple, n)`
+    - `float(term) hd(list) length(list) node() node(pid|ref|port) rem(num, num) round(num)`
+    - `self() tl(list) trunc(number) tuple_size(tuple)`
+
+#### Default Parameters
+By using the syntax `param \\ value`
+
+#TODO
 
 
 
