@@ -1,4 +1,5 @@
 defmodule TRYMIXNOTP do
+  use Application
   @moduledoc """
   Documentation for TRYMIXNOTP.
   """
@@ -15,4 +16,9 @@ defmodule TRYMIXNOTP do
   def hello do
     :world
   end
+
+  def start(_type, _args) do
+    TRYMIXNOTP.Supervisor.start_link
+  end
 end
+
