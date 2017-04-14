@@ -65,7 +65,7 @@ The reason those failures are happening is because, for didactic purposes, we ha
 1. We are prematurely optimizing (by adding this cache layer)
 2. We are using `cast/2` (while we should be using `call/2`)
 
-### Race conditions?
+### Race conditions?  ( Read Again!)
 What is happening in our tests is that there is a delay in between an operation and the time we can observe this change in the ETS table. Here is what we were expecting to happen:
 
 1. We invoke `try_mix_n_otp.Registry.create(registry, "shopping")`

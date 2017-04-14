@@ -18,7 +18,7 @@ Here we'll use a single module for both the server callbacks and the client API.
 Create a new file at `lib/try_mix_n_otp/registry.ex` with the following contents:
 
 ```elixir
-    defmodule KV.Registry do
+    defmodule TRYMIXNOTP.Registry do
       use GenServer
 
       ## Client API
@@ -60,7 +60,7 @@ Create a new file at `lib/try_mix_n_otp/registry.ex` with the following contents
         if Map.has_key?(names, name) do
           {:noreply, names}
         else
-          {:ok, bucket} = KV.Bucket.start_link
+          {:ok, bucket} = TRYMIXNOTP.Bucket.start_link
           {:noreply, Map.put(names, name, bucket)}
         end
       end
@@ -126,7 +126,7 @@ To fix the bug, we need the registry to monitor every bucket it spawns for clean
 
 Let's first play with monitors by starting a new console with iex -S mix:
    
-    iex> {:ok, pid} = KV.Bucket.start_link
+    iex> {:ok, pid} = TRYMIXNOTP.Bucket.start_link
     {:ok, #PID<0.66.0>}
     iex> Process.monitor(pid)
     #Reference<0.0.0.551>
@@ -192,7 +192,7 @@ Thus, use links when you want linked crashes, and monitors when you just want to
 Returning to our `handle_cast/2` implementation, you can see the registry is both linking and monitoring the buckets:
 
 ``` elixir
-    {:ok, pid} = KV.Bucket.start_link
+    {:ok, pid} = TRYMIXNOTP.Bucket.start_link
     ref = Process.monitor(pid)
 ```
 This is a bad idea, as we don’t want the registry to crash when a bucket crashes! We typically avoid creating new processes directly, instead we delegate this responsibility to supervisors.   

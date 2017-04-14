@@ -22,11 +22,10 @@ defmodule TRYMIXNOTP.Supervisor do
 
     # supervise(children, options)
     supervise(children, strategy: :rest_for_one)
-    # :one_for_one -> If a child process terminates, only that process is restarted
+    # :one_for_one -> If a child process terminates, only that process is restarted. This strategy requires the supervisor specification to contain only one child. 
     # :rest_for_one -> when a child process crashes, the supervisor will only kill and restart child processes which were started after the crashed child.
     # :one_for_all strategy will kill and restart all of its children processes whenever any one of them dies.
     # Similar to :one_for_one but suits better when dynamically attaching children.
-    # This strategy requires the supervisor specification to contain only one child. 
     # Many functions in this module behave slightly differently when this strategy is used
   end
 end

@@ -46,7 +46,7 @@ Create a file at `test/try_mix_n_otp/bucket_test.exs` with the following:
 Create `lib/try_mix_n_otp/bucket.ex`:
 
 ``` elixir
-    defmodule KV.Bucket do
+    defmodule TRYMIXNOTP.Bucket do
       @doc """
       Starts a new bucket.
       """

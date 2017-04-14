@@ -1,9 +1,13 @@
-defmodule TRYMIXNOTP.Mixfile do
+defmodule TRYMIXOTPServer.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :try_mix_n_otp,
+    [app: :try_mixotp_server,
      version: "0.1.0",
+     build_path: "../../_build",
+     config_path: "../../config/config.exs",
+     deps_path: "../../deps",
+     lockfile: "../../mix.lock",
      elixir: "~> 1.4",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -16,8 +20,7 @@ defmodule TRYMIXNOTP.Mixfile do
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
     [extra_applications: [:logger],
-     mod: {TRYMIXNOTP, []}
-    ]
+     mod: {TRYMIXOTPServer.Application, []}]
   end
 
   # Dependencies can be Hex packages:
@@ -28,8 +31,12 @@ defmodule TRYMIXNOTP.Mixfile do
   #
   #   {:my_dep, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
   #
+  # To depend on another app inside the umbrella:
+  #
+  #   {:my_app, in_umbrella: true}
+  #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [{:try_mix_n_otp, in_umbrella: true} ]
   end
 end
