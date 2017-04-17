@@ -323,7 +323,27 @@ Give iex a source file's name, and it compiles and loads the file before it disp
     - `self() tl(list) trunc(number) tuple_size(tuple)`
 
 #### Default Parameters
-By using the syntax `param \\ value`
+By using the syntax `param \\ value`  
+Instead of :
+
+``` elixir
+    def foo(:first_clause, b \\ :default) do ... end
+    def foo(:second_clauose, b) do ... end
+```
+one should write:   
+
+``` elixir
+    # A func head with no body that contains the default parameters, and use regular parameters for the rest. 
+    # The defaults will apply to all calls to the function.
+    def foo(a, b \\ :default)               
+    def foo(:first_clause, b) do ... end
+    def foo(:second_clause, b) do ... end
+```
+
+#### Private Functions
+You cannot have some heads private and others public.
+
+#### The Amazing Pipe Operator: |>
 
 #TODO
 
