@@ -1,4 +1,0 @@
-# TryMixotpUmbrella
-
-**TODO: Add description**
-
