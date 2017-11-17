@@ -27,19 +27,26 @@ HEAD指向的版本就是当前版本。Git允许我们使用`git reset --hard c
 用于删除一个文件。如果一个文件已经被提交到版本库，那么你永远不用担心误删，但是要小心，你只能恢复文件到最新版本，你会丢失最近一次提交后你修改的内容。
 
 ## 远程仓库：
+以下origin是可更改的名字
 ### 关联远程库
 	$ git remote add origin git@server-name:path/repo-name.git
+### 设置远程库地址
+  $ git remote set-url origin git@server-name:path/repo-name.git
 ### 查看远程库信息：
 	$ git remote -v
 ### 删除远程库
 	$ git remote rm origin
 ### 从远程抓取分支
+获取全部
+
 	$ git pull
+
+拉取指定分支
+  $ git fetch origin remote_branch_name:local_name
+
 如果有冲突，要先处理冲突。
 ### 推送到远程库
-推送master分支的所有内容  
-
-	$ git push -u origin master
+	$ git push -u origin branch_name
 ### 在本地创建和远程分支对应的分支
 本地和远程分支的名称最好一致  
 
