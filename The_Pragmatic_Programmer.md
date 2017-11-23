@@ -213,10 +213,33 @@ You'll find that each component will typically have parameters that affect how i
 overall model. At this stage, simply identify each parameter.  
 
 ##### Give Each Parameter a Value
+##### Calculate the Answers
+##### Keep Track of Your Estimating Prowess
+##### Estimating Project Schedules
+- Check requirements
+- Analyze risk
+- Design, implement, integrate
+- Validate with the users
 
-#TODOOO
+Tip 19: Iterate the Schedule with the Code
+
+##### What to Say When Asked for an Estimate
+You say "I'll get back to you."
+
 
 ## Chap:3 The Basic Tools
+#TODOOO
+### The Power of Plain Text
+### Shell Games
+### Power Editing
+### Source Code Control
+### But My Team Isn't Using Source Code Control
+### Source Code Control Products
+### Debugging
+### Text Manipulation
+### Exercises
+### Code Generators
+
 ## Chap:4 Pragmatic Paranoia
 ## Chap:5 Bend or Break
 ## Chap:6 While You Are Coding

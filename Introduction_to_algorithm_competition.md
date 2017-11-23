@@ -1,59 +1,73 @@
 # 第1部分 语言篇
 ## 第一章 程序设计入门
-### 1.1
+### 算术表达式
 
 ``` c
     printf("%.1lf\n", 8/5); --> 1.6
     printf("%d\n", 8.0/5.0); --> -1717986918
 ```
-### 1.2
-1、尽量用const声明常数：const double pi = 4.0 * atan(1, 0);
-2、不要在竞赛中使用conio.h、getch()、getche()、gotoxy()、clrscr()
-3、printf("%3d", 25); --> 空格25
-4、printf("%03d", 25); --> 025
-5、printf("%-3d", 25); --> 25空格
-6、a和b互换：a^=b^=a^=b;
+### 变量及其输入
+尽量用const声明常数：const double pi = 4.0 * atan(1, 0);  
+不要在竞赛中使用conio.h、getch()、getche()、gotoxy()、clrscr()  
+printf("%3d", 25); --> 空格25  
+printf("%03d", 25); --> 025  
+printf("%-3d", 25); --> 25空格  
+a和b互换：a^=b^=a^=b;  
 
 ## 第二章 循环结构程序设计
-### 2.1
-1、判断浮点型m是否为整数：floor(m+0.5)==m
-### 2.2
-1、获得程序运行伊始至当前时间：printf("%.2lf", (double)clock()/CLOCK_PER_SEC);    // time.h
-2、管道技巧：echo inputValues | programName
-### 2.3
-1、scanf返回值：输入变量个数-->while(scanf("%d", &a)==1){}
-windows下结束输入：ctrl+z， 再enter
-linux下：ctrl+d
-2、文件操作
-  a、文件比较：fc（windows)/ diff(linux)
-  b、使用文件：
-    1）最简单：输入输出重定向。但不能同时读写文件和标准输入输出
-      i)在main函数入口处加上：
-        freopen("input.txt", "r", stdin);
-        freopen("output.txt", "w", stdout);
-      ii)提交只需删除LOCAL。当然最好把LOCAL定义在编译选项中，则无需修改提交。
-        #define LOCAL
-        #ifdef LOCAL    // 只在定义了LOCAL才编译
-          fre...
-          fre...
-        #endif
-    2）fopen：稍繁琐，但灵活
-      i)
-        FILE *fin, *fout;
-        fin = fopen("data.in", "rb");
-        fout = fopen("data.out", "wb");
-        ...
-        while(fscanf(fin, "%d", &x)==1){}
-        ...
-        fprintf(fout, "%d %d\n", min, max);
-        fclose(fin);
-        fclose(fout);
-      ii）改写fopen程序成标准输入输出：
-        只需赋值：fin=stdin; fout=stdout;即可。
-### 2.4
+### for循环
+判断浮点型m是否为整数：floor(m+0.5)==m  
+### while循环和do-while循环
+获得程序运行伊始至当前时间：printf("%.2lf", (double)clock()/CLOCK_PER_SEC);    // time.h  
+管道技巧：echo inputValues | programName  
+### 循环的代价
+#### scanf返回值
+不确定输入变量个数-->while(scanf("%d", &a)==1){}  
+windows下结束输入：ctrl+z， 再enter  
+linux下：ctrl+d  
+#### 文件操作
+#### 文件比较
+fc（windows)/ diff(linux)
+#### 使用文件
+#####最简单
+输入输出重定向。但不能同时读写文件和标准输入输出  
+1. 在main函数入口处加上：
+
+``` c
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+```
+2. 提交只需删除LOCAL。当然最好把LOCAL定义在编译选项中，则无需修改提交。
+
+``` c
+    #define LOCAL
+
+    // in main
+    #ifdef LOCAL    // 只在定义了LOCAL才编译
+      fre...
+      fre...
+    #endif
+```
+##### fopen：稍繁琐，但灵活  
+1.
+
+``` c
+    FILE *fin, *fout;
+    fin = fopen("data.in", "rb");
+    fout = fopen("data.out", "wb");
+    ...
+    while(fscanf(fin, "%d", &x)==1){}
+    ...
+    fprintf(fout, "%d %d\n", min, max);
+    fclose(fin);
+    fclose(fout);
+```
+2. 改写fopen程序成标准输入输出：  
+    只需赋值：fin=stdin; fout=stdout;即可。
+### 算法竞赛中的输入输出框架
 1、浮点数比较陷阱：if(f != 10){}
 2、64位整数
-  a、int范围是-2^31~2^31-1，比-2*10^9~2*10^9略宽
+  a、int范围是-2^31~2^31-1，比-2\*10^9~2\*10^9略宽
      long long: -2^63~2^63-1，比-10^19~10^19略窄
   b、输出：
       linux下：统一%lld
@@ -70,7 +84,7 @@ linux下：ctrl+d
     #define fin cin
     #define fout cout
 4、标准输入流cin比文件流fin慢很多很多（与效率和操作系统相关）
-### 2.5
+### 练习
 1、printf特殊用法
 
 ``` c
@@ -79,7 +93,7 @@ linux下：ctrl+d
 ```
 
 ## 第三章 数组和字符串
-### 3.1、数组
+### 数组
 1、超大的数组只能开在main函数外
 2、数组不能直接赋值操作，除非：
 
@@ -88,7 +102,8 @@ linux下：ctrl+d
     memcpy(b, a, sizeof(a));    // 复制整个a
 ```
 3、memset(a, 0, sizeof(a));
-### 3.2、字符数组
+### 字符数组
+# TODOOOO
 1、字符——特殊整数
   '\\'——反斜线
   '\''——单引号
@@ -129,10 +144,9 @@ linux下：ctrl+d
 
 
 
-## 第三章 数组和字符串
 ## 第四章 函数和递归
-# 第2部分 算法篇
 ## 第五章 基础题目选解
+# 第2部分 算法篇
 ## 第六章 数据结构基础
 ## 第七章 暴力求解法
 ## 第八章 高效算法设计
