@@ -113,8 +113,7 @@ fc（windows)/ diff(linux)
 
 ``` c
   int count=0;
-  printf("%d %d %d\n", count++,
-  count++, count++);    // 从右往左！
+  printf("%d %d %d\n", count++, count++, count++);    // 从右往左！
   printf("%d\n", count);
   printf("%d\n", count = count++);    // ++不执行！
   printf("%d\n", count);
