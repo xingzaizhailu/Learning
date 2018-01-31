@@ -156,3 +156,9 @@ parameter is used to pass request parameters. The resulting configuration would 
             root /data/images;
         }
     }
+
+###
+    systemctl status nginx.service
+    systemctl start nginx
+    systemctl restart nginx
+    systemctl reload nginx

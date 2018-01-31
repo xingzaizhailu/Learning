@@ -226,11 +226,52 @@ Tip 19: Iterate the Schedule with the Code
 ##### What to Say When Asked for an Estimate
 You say "I'll get back to you."
 
-
 ## Chap:3 The Basic Tools
-#TODOOO
+Always be on the lookout for better ways of doing things.
+If you come across a situation where you feel your current tools can't cut it,
+make a note to look for something different or more powerful that would have helped.
+Let need drive your acquisitions.  
+
 ### The Power of Plain Text
+#### What is Plain Text
+Plain text is made up of printable characters in a form that can be read and understood directly by
+people.  
+
+Tip 20: Keep Knowledge in Plain Text
+#### Drawbacks
+There are two major drawbacks to using plain text:
+1. It may take more space to store than a compressed binary format, and
+2. it may be computationally more expensive to interpret and process a plain text file.
+Depending on your application, either or both of these situations may be unacceptable—for example,
+when storing satellite telemetry data, or as the internal format of a relational database.  
+But even in these situations, it may be acceptable to store metadata about the raw data in
+plain text.  
+Some developers may worry that by putting metadata in plain text, they're exposing it to the
+system's users. This fear is misplaced. Binary data may be more obscure than plain text,
+but it is no more secure. If you worry about users seeing passwords, encrypt them.
+If you don't want them changing configuration parameters, include a secure hash
+of all the parameter values in the file as a checksum.  
+
+#### The Power of Text
+benefit:
+- Insurance against obsolescence
+- Leverage
+- Easier testing
+##### Insurance Against Obsolescence
+Human-readable forms of data, and self-describing data, will outlive all other forms of data
+and the applications that created them.  
+You can parse such a file with only partial knowledge of its format; with most binary files, you
+must know all the details of the entire format in order to parse it successfully.
+##### Leverage
+Virtually every tool in the computing universe, from source code management systems to compiler
+environments to editors and stand-alone filters, can operate on plain text.  
+##### Easier Testing
+#### Lowest Common Denominator
+
 ### Shell Games
+Tip 21: Use the Porwer of Command Shells.
+#### Shell Utilities and Windows Systems
+# TODOOOO
 ### Power Editing
 ### Source Code Control
 ### But My Team Isn't Using Source Code Control
