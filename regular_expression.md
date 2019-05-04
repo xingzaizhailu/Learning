@@ -36,8 +36,8 @@ A quantifier after a token (such as a character) or group specifies how often th
 - \D    any non-digit: [^0-9]  
 - \w    any alphanumeric/underscore: [a-zA-Z0-9\_]  
 - \W    any non-alphanumeric: [^a-zA-Z0-9\_]  
-- \s    whitespace(space, tab): [ \r\t\n\f]
-- \S    non-whitespace: [^ \r\t\n\f]
+- \s    whitespace(space, tab): [ \r\t\n\f]  
+- \S    non-whitespace: [^ \r\t\n\f]  
 
 
 e.g.

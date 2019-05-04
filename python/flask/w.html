@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="data">这里是数据</div>
+    <input id="textbox" type="text" />
+    <button id="click-button" onclick="clickButton()">发送</button>
+
+<script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+    function clickButton(){
+        let send_data = document.getElementById("textbox").value;
+        console.log(send_data);
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: "http://10.12.218.253:5000/hello/" + send_data,
+            ContentType: "application/json",
+            data: {},
+            dataType: "json",
+            success: function(data) {
+                document.getElementById("data").innerText = data;
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

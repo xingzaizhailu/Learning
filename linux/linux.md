@@ -1,3 +1,7 @@
+# Variables
+$ var="hello"
+$ echo $var
+
 # show a named node:
     ps aux | grep name
 to find it's process ids
