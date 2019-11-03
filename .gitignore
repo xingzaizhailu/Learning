@@ -82,3 +82,8 @@ erl_crash.dump
 /db
 log
 *.secret.*
+*.tmp
+
+### This project
+/algorithms/algo
+.vscode
