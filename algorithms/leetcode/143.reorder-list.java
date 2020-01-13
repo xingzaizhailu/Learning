@@ -15,30 +15,33 @@
  */
 class Solution {
     public void reorderList(ListNode head) {
-        if (head == null) return;
+        if (head == null || head.next == null) return;
         ListNode fast = head.next, slow = head;
         while (fast != null && fast.next != null) {
             slow = slow.next;
             fast = fast.next.next;
         }
         
-        ListNode tmp = slow;
-        slow = slow.next;
+        // To reverse second half
+        ListNode tmp = slow, secHalf = slow.next, prev = null;
         tmp.next = null;
-        Stack<ListNode> stack = new Stack<>();
-        while (slow != null) {
-            stack.add(slow);
-            slow = slow.next;
+        while (secHalf != null) {
+            tmp = secHalf;
+            secHalf = secHalf.next;
+            tmp.next = prev;
+            prev = tmp;
         }
+        secHalf = prev;
         
+        // Merge first half and the reversed second half
         ListNode cur = head;
-        while(!stack.isEmpty()) {
-            tmp = stack.pop();
+        while(head != null && secHalf != null) {
+            tmp = secHalf;
+            secHalf = secHalf.next;
             tmp.next = cur.next;
             cur.next = tmp;
             cur = cur.next.next;
         }
-        
     }
 }
 // @lc code=end
