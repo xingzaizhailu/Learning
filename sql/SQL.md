@@ -223,7 +223,7 @@ MySQL supports the LIMIT clause to select a limited number of records, while Ora
     WHERE ROWNUM <= number;
 ```
 
-### Functions
+### [Functions](https://sqlzoo.net/wiki/FUNCTIONS)
 MAX, MIN, COUNT, AVG, SUM, LENGTH(str), LEFT(str, len)
 
 #### Round
