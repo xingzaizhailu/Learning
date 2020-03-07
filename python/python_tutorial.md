@@ -1,17 +1,31 @@
 # [Python](https://docs.python.org/3/tutorial)
 
+## [Liaoxue Feng Python](https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000)
+Run
+        python hello.py
+To run python code directly on Mac and Linux, add this to the first line:
+
+        #!/usr/bin/env python3
+        print('hello world')
+Grant authority:
+
+        $ chmod a+x hello.py
+        $ ./hello.py
+
 ## Using the Python Interpreter
 By default, Python source files are treated as encoded in UTF-8.  
 To declare an encoding other than default one, a special comment line should be added as the first
 line:
 
 ``` python
-    # -*- coding: encoding -*-
+    # -*- coding: <encoding> -*-
 ```
 e.g. Windows-1252 encoding is to be used:
 
 ``` python
     # -*- coding: cp-1252 -*-
+    or utf-8
+    # -*- coding: utf-8 -*-
 ```
 
 One exception to the first line rule is when the source code starts with a UNIX “shebang” line. In
@@ -58,6 +72,24 @@ In interactive mode, the last printed expression is assigned to the variable \_.
 ### Strings
 Enclosed in single quotes or double quotes.  
 
+#### String and Encoded
+    >>> ord('A')
+    65
+    >>> ord('中')
+    20013
+    >>> chr(66)
+    'B'
+#### Bytes
+    b'ABC'
+    
+    >>> 'ABC'.encode('ascii')
+    b'ABC'
+    >>> '中文'.encode('utf-8')
+    b'\xe4\xb8\xad\xe6\x96\x87'
+    >>> b'ABC'.decode('ascii')
+    'ABC'
+    >>> b'\xe4\xb8\xad\xff'.decode('utf-8', errors='ignore')
+    '中'
 The print() function produces a more readable output, by omitting the enclosing quotes and by
 printing escaped and special characters:  
 
@@ -107,6 +139,7 @@ Strings can be concatenated (glued together) with the + operator, and repeated w
     >>> # 3 times 'un', followed by 'ium'
     >>> 3 * 'un' + 'ium'
     'unununium
+    
     >>> 'Py' 'thon'
     'Python'
 
@@ -160,10 +193,37 @@ Python strings cannot be changed — they are immutable.
     TypeError: 'str' object does not support item assignment
 ```
 
+#### about immutable
+    >>> a = ['c', 'b', 'a']
+    >>> a.sort()
+    >>> a
+    ['a', 'b', 'c']
+    
+    >>> a = 'abc'
+    >>> b = a.replace('a', 'A')
+    >>> b
+    'Abc'
+    >>> a
+    'abc'
 ### Lists
+
 Lists might contain items of different types, but usually the items all have the same type.  
 All slice operations return a new list containing the requested elements.  
 
+        >>> classmates = ['a', 'b', 'c']
+        >>> temp1 = classmates # give another name to `classmates`
+        >>> temp2 = classmates[:] # have a copy of `classmates`
+        >>> len(classmates)
+        3
+    
+        >>> classmates.insert(1, 'Jack')
+        >>> classmates.pop()
+        'd'
+        >>> classmates.pop(1)
+        Jack
+        >>> classmates.extend(['e', 'f'])
+        >>> L = ['Apple', 123, True, ['a', 'b']]
+        >>> classmates + ['g','h']
 ``` shell
     >>> squares = [1, 4, 9, 16, 25]
     >>> squares
@@ -175,6 +235,9 @@ All slice operations return a new list containing the requested elements.
     25
     >>> squares[-3:]  # slicing returns a new list
     [9, 16, 25]
+
+	>>> squares[:10:2]  # get every 2 elements of first 10 elements
+	>>> squares[::5]   # get every 5 elements of all elements
 
     >>> squares + [36, 49, 64, 81, 100]
     [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
@@ -238,6 +301,11 @@ It is possible to nest lists.
     ...
     More
 ```
+when x is not 0, '', []. condition will be Ture, else False
+
+        if x:
+            print('True')
+
 
 ### for Statements
 Python’s for statement iterates over the items of any sequence (a list or a string).  
@@ -372,72 +440,431 @@ Falling off the end of a function also returns None.
 
 ### More on Defining Functions
 #### Default Argument Values
-# TODOOOO
 
+```
+	def power(x, n=2):
+		pass
+```
 
+#### only use immutable object as default value
+        def add_end(L=[]):
+            L.append('END')
+            return L
+    
+        >>> add_end()
+        ['END']
+        >>> add_end()
+        ['END', 'END']
+        >>> add_end()
+        ['END', 'END', 'END']`
+
+update:
+
+        def add_end(L=None):
+            if L is None:
+                L = []
+            L.append('END')
+            return L
 #### Keyword Arguments
-#### Arbitrary Argument Lists
-#### Unpacking Argument Lists
+
+consider params as a dict
+
+    def person(name, age, **kw):
+        print('name:', name, 'age:', age, 'other:', kw)
+    
+    >>> person('Michael', 30)
+    name: Michael age: 30 other: {}
+    >>> person('Adam', 45, gender='M', job='Engineer')
+    name: Adam age: 45 other: {'gender': 'M', 'job': 'Engineer'}
+    
+    >>> extra = {'city': 'Beijing', 'job': 'Engineer'}
+    >>> person('Jack', 24, **extra)
+    name: Jack age: 24 other: {'city': 'Beijing', 'job': 'Engineer'}
+##### limited keyword params
+    def person(name, age, *, city, job):
+        print(name, age, city, job)
+#### Arbitrary Argument Lists 
+
+    	def calc(*numbers):
+            sum = 0
+            for n in numbers:
+                sum = sum + n * n
+            return sum
+    	>>> calc(1, 2, 3) # consider params as a tuple
+    
+        >>> nums = [1, 2, 3]
+        >>> calc(*nums)
+        14
 #### Lambda Expressions
+
+#### sequence of params
+必选参数、默认参数、可变参数、命名关键字参数和关键字参数。
+
+    def f1(a, b, c=0, *args, **kw):
+        print('a =', a, 'b =', b, 'c =', c, 'args =', args, 'kw =', kw)
+    
+    def f2(a, b, c=0, *, d, **kw):
+        print('a =', a, 'b =', b, 'c =', c, 'd =', d, 'kw =', kw)
+    
+    >>> f1(1, 2)
+    a = 1 b = 2 c = 0 args = () kw = {}
+    >>> f1(1, 2, c=3)
+    a = 1 b = 2 c = 3 args = () kw = {}
+    >>> f1(1, 2, 3, 'a', 'b')
+    a = 1 b = 2 c = 3 args = ('a', 'b') kw = {}
+    >>> f1(1, 2, 3, 'a', 'b', x=99)
+    a = 1 b = 2 c = 3 args = ('a', 'b') kw = {'x': 99}
+    >>> f2(1, 2, d=99, ext=None)
+    a = 1 b = 2 c = 0 d = 99 kw = {'ext': None}
+最神奇的是通过一个tuple和dict，你也可以调用上述函数：
+
+    >>> args = (1, 2, 3, 4)
+    >>> kw = {'d': 99, 'x': '#'}
+    >>> f1(*args, **kw)
+    a = 1 b = 2 c = 3 args = (4,) kw = {'d': 99, 'x': '#'}
+    >>> args = (1, 2, 3)
+    >>> kw = {'d': 88, 'x': '#'}
+    >>> f2(*args, **kw)
+    a = 1 b = 2 c = 3 d = 88 kw = {'x': '#'}
+所以，对于任意函数，都可以通过类似func(\*args, \*\*kw)的形式调用它，无论它的参数是如何定义的。
+
 #### Documentation Strings
 #### Function Annotations
 ### Intermezzo: Coding Style
 ## Data Structures
-5.1. More on Lists
-5.1.1. Using Lists as Stacks
-5.1.2. Using Lists as Queues
-5.1.3. List Comprehensions
-5.1.4. Nested List Comprehensions
-5.2. The del statement
-5.3. Tuples and Sequences
-5.4. Sets
-5.5. Dictionaries
-5.6. Looping Techniques
-5.7. More on Conditions
+### Tuple
+immutable
+
+    >>> classmates = ('Michael', 'Bob', 'Tracy')
+#### empty tuple
+
+    >>> t = ()
+    >>> t
+    ()
+#### one element
+    >>> t = (1) # wrong!
+    >>> t
+    1
+    
+    >>> t = (1,)
+    >>> t
+    (1,)
+
+#### 'mutable' tuple
+    >>> t = ('a', 'b', ['A', 'B'])
+    >>> t[2][0] = 'X'
+    >>> t[2][1] = 'Y'
+    >>> t
+    ('a', 'b', ['X', 'Y'])
+
+### Dictionaries
+
+The key of Dict must be an immutable type (string, number or tuple)  
+
+        >>> d = {'Michael': 95, 'Bob': 75, 'Tracy': 85}
+        >>> d['Adam'] = 67
+        >>> d['Adam']
+        >>> d.keys()
+        >>> d.values()
+        >>> len(d)
+#### avoid key not exist err
+        >>> 'Thomas' in d
+        False
+    
+        >>> d.get('Thomas') # return None
+        >>> d.get('Thomas', -1)
+        -1
+### Set
+
+        >>> s = set([1, 1, 2, 3])
+        >>> s
+        {1, 2, 3}
+    
+        >>> s.add(4)
+        >>> s.remove(4)
+    
+        >>> 1 in s
+        TRUE
+#### operate
+        >>> s1 = set([1, 2, 3])
+        >>> s2 = set([2, 3, 4])
+        >>> s1 - s2
+        >>> s1 & s2
+        {2, 3}
+        >>> s1 | s2
+        {1, 2, 3, 4}
+### Looping
+while ...:
+
+        sum = 0
+        n = 99
+        while n > 0:
+            sum = sum + n
+                n = n - 2
 5.8. Comparing Sequences and Other Types
+
+## Functional Programming
+### Return a function
+### Partial
+Fix partial of the parameters for a function.
+
+```
+    >>> int2 = functools.partial(int, base=2)
+    >>> int2('1000000')
+    64
+```
+
 ## Modules
+
 6.1. More on Modules
 6.1.1. Executing modules as scripts
 6.1.2. The Module Search Path
 6.1.3. “Compiled” Python files
 6.2. Standard Modules
 6.3. The dir() Function
-6.4. Packages
-6.4.1. Importing * From a Package
-6.4.2. Intra-package References
-6.4.3. Packages in Multiple Directories
+
+### Package
+1. Create a folder to store related modules, folder name is the package name
+2. Create an __init__.py file under the folder, could be empty
+import by the expression:
+```
+    import package.module
+```
+#### Packages in Multiple Directories
+
 ## Input and Output
-7.1. Fancier Output Formatting
-7.1.1. Old string formatting
+
+    name = input('plz input your name: ')
+    print('hello', name)
+    
+    >>> print('\\\t\\')
+    \       \
+    >>> print(r'\\\t\\')  # ignore
+    \\\t\\
+    
+    >>> print('''line1
+        ... line2
+        ... line3''')
+### Fancier Output Formatting
+
+    >>> 'Hi, %s, you have $%d.' % ('Michael', 1000000)
+    'Hi, Michael, you have $1000000.'
+    
+    >>> print('%2d-%02d' % (3, 1))
+     3-01
+    >>> print('%.2f' % 3.1415926)
+    3.14
+    
+    >>> 'growth rate: %d %%' % 7
+    'growth rate: 7 %'
 7.2. Reading and Writing Files
 7.2.1. Methods of File Objects
 7.2.2. Saving structured data with json
+
 ## Errors and Exceptions
 8.1. Syntax Errors
-8.2. Exceptions
+### Exception
+```
+    try:
+        expressions
+    except Exception [as reason]:
+        dealing Exception
+    finally:
+        must be executed with or without exception
+```
+
+### Types of exception
+
 8.3. Handling Exceptions
 8.4. Raising Exceptions
 8.5. User-defined Exceptions
 8.6. Defining Clean-up Actions
 8.7. Predefined Clean-up Actions
 ## Classes
-9.1. A Word About Names and Objects
-9.2. Python Scopes and Namespaces
-9.2.1. Scopes and Namespaces Example
-9.3. A First Look at Classes
-9.3.1. Class Definition Syntax
-9.3.2. Class Objects
-9.3.3. Instance Objects
-9.3.4. Method Objects
-9.3.5. Class and Instance Variables
-9.4. Random Remarks
-9.5. Inheritance
+### Private attribute
+```
+    class Person:
+        __name = 'Private name'
+
+        def getName(self):
+            return self.__name
+    >> p = Person()
+    >> p.getName()
+    >> p._Person__name  # so it's only name mapping, fake private
+```
+### Limit the attributes that can be added into instance
+
+```
+class Student(object):
+	# list attributes that's allowed to be added at running
+	__slots__ = ('name', 'age')
+```
+
+Note: '\_\_slots\_\_' only works for instances of current class, not work for inherent classes, unless  it's '\_\_slots\_\_' of base class is merged into itself.
+
+### Decorator
+
+```
+    import functools
+
+    def log(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kw):
+            print('call %s():' % func.__name__)
+            return func(*args, **kw)
+        return wrapper
+
+    @log
+    def now():
+        print('2015-3-25')   # like: now = log(now), without functools.wraps now.__name__ == 'wrapper'
+```
+
+A decorator with parameters
+
+```
+    import functools
+
+    def log(text):
+        def decorator(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kw):
+                print('%s %s():' % (text, func.__name__))
+                return func(*args, **kw)
+            return wrapper
+        return decorator
+    >>> now = log('execute')(now)
+```
+
+```
+class Student(object):
+
+    @property         # make this function a getter
+    def score(self):  # this function will be called when stu.score is called.
+        return self._score
+
+    @score.setter     # make this function a setter
+    def score(self, value):
+        if not isinstance(value, int):
+            raise ValueError('score must be an integer!')
+        if value < 0 or value > 100:
+            raise ValueError('score must between 0 ~ 100!')
+        self._score = value
+```
+
+
+
 9.5.1. Multiple Inheritance
+
+MixIn
+
+```
+class Dog(Mammal, RunnableMixIn, CarnivorousMixIn):
+    pass
+```
+
 9.6. Private Variables
 9.7. Odds and Ends
+
+### type()
+
+The definition of a class is established at running time in python. `type()` function can either return an object type or return a new created type (at running time).
+
+```
+>>> def fn(self, name='world'): print('Hello, %s.' % name)
+#type(class name, base classes in tuple, bind func fn to hello)
+>>> Hello = type('Hello', (object,), dict(hello=fn))  # create Hello class.
+>>> h = Hello()
+>>> h.hello()
+Hello, world.
+>>> print(type(Hello))
+<class 'type'>
+>>> print(type(h))
+<`class '__main__.Hello'>
+```
+
+### Metaclass
+
+可以把类看成是metaclass创建出来的实例
+
+```
+# metaclass是类的模板，所以必须从type类派生
+class ListMetaclass(type):
+	def __new__(cls, name, base, attrs):
+		attrs['add'] = lamda self, value: self.append(value)
+		return type.__new__(cls, name, basess, attrs)
+
+# 
+class MyList(list, metaclass=ListMetaclass):
+	pass
+```
+
+TODO: too hard
+
+### Magic functions
+
+- _\_str\_\_ :is for print & \_\_repr\_\_ is for debug
+
+- \_\_iter\_\_: for ... in
+
+- \_\_getitem\_\_: get by index. but you need to handle for int, [3:5], [:,5], [:5:2], [-2]
+
+- \_\_getattr\_\_: will be called only when the attributes not exist
+
+  - ```
+    class Student(object):
+    
+        def __getattr__(self, attr):
+            if attr=='age':
+                return lambda: 25
+            raise AttributeError('\'Student\' object has no attribute \'%s\'' % attr)
+    ```
+
+- \_\_call\_\_: an_instance()/ callable()
+
+### Iteration
+
+        for key in dict:
+            expression
+    
+        for value in dict.values():
+            expression
+    
+        for k, v in dict.items():
+            expression
+
+Check if a data structure is iterable:
+
+```
+	>>> from collections import Iterable
+    >>> isinstance('abc', Iterable)
+    True
+    >>> isinstance(123, Iterable)
+    False
+    >>> for i, value in enumerate(['A', 'B', 'C']):
+    ...     print(i, value)
+    ...
+    0 A
+    1 B
+    2 C
+```
+
+
+
 9.8. Iterators
-9.9. Generators
+
+### Generator
+
+```
+    >>> g = (x * x for x in range(10))
+    >>> g
+    <generator object <genexpr> at 0x1022ef630>
+    >>> next(g)
+```
+
+Key word: `yield`
+
 9.10. Generator Expressions
+
 ## Brief Tour of the Standard Library
 10.1. Operating System Interface
 10.2. File Wildcards
@@ -451,6 +878,7 @@ Falling off the end of a function also returns None.
 10.10. Performance Measurement
 10.11. Quality Control
 10.12. Batteries Included
+
 ## Brief Tour of the Standard Library — Part II
 11.1. Output Formatting
 11.2. Templating
@@ -460,6 +888,7 @@ Falling off the end of a function also returns None.
 11.6. Weak References
 11.7. Tools for Working with Lists
 11.8. Decimal Floating Point Arithmetic
+
 ## Virtual Environments and Packages
 12.1. Introduction
 12.2. Creating Virtual Environments
@@ -477,6 +906,4 @@ Falling off the end of a function also returns None.
 16.1.3. The Interactive Startup File
 16.1.4. The Customization Modules
 
-//
-233 == 233.0 # True
-'233' == 233 # False
+

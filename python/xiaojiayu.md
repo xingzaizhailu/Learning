@@ -1,17 +1,3 @@
-# File
-
-# Exception
-```
-    try:
-        expressions
-    except Exception [as reason]:
-        dealing Exception
-    finally:
-        must be executed with or without exception
-```
-
-## Types of exception
-
 # else
 When the loop did not encounter a `break` statement.  
 ``` python
@@ -40,18 +26,6 @@ When the loop did not encounter a `break` statement.
         do something with data
 ```
 
-# Class and Object
-## Private attribute
-```
-    class Person:
-        __name = 'Private name'
-
-        def getName(self):
-            return self.__name
-    >> p = Person()
-    >> p.getName()
-    >> p._Person__name  # so it's only name mapping, fake private
-```
 
 ## BIF
 - A class is a subclass of itself. issubclass/ isinstance
@@ -121,10 +95,3 @@ __add__, __sub__, __mul__ , __truediv__ , __floordiv__ , __mod__ , __divmod__ , 
     >>> del test.x
 ```
 Have a look of the implementation of property in doc.
-
-# Package
-1. Create a folder to store related modules, folder name is the package name
-2. Create an __init__.py file under the folder, could be empty
-import by the expression:
-```
-    import package.module
