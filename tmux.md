@@ -35,6 +35,7 @@ Figure out which sessions are running by using:
     tmux a -t <session_name>
     tmux new -s <session_name> // create a session with a name
     tmux rename-session -t ori_name new_name
+    C-b $     // rename session
 
 ## Moving on
 - C-b z: make a pane full screen
@@ -42,6 +43,10 @@ Figure out which sessions are running by using:
 - C-b ,: rename the current window
 
 建议对调ctrl和Caps-lock
+
+## Moving windows
+- swap-window -s * -t *
+- move-window -t *
 
 
 ### TODO: to config
