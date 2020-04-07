@@ -786,6 +786,7 @@ import by the expression:
     
     >>> 'growth rate: %d %%' % 7.1
     'growth rate: 7 %'
+
 ## Classes
 ### Private attribute
 ```
@@ -1039,6 +1040,49 @@ environ({'VERSIONER_PYTHON_PREFER_32_BIT': 'no', 'TERM_PROGRAM_VERSION': '326', 
 ### Saving structured data with json
 
 ## Brief Tour of the Standard Library
+### Regular Expression Module: `re`
+#### Match
+```
+re.match(r'^\d{3}\-\d{3,8}$', text) # return a `Match` object if success, otherwise `None`.
+```
+
+#### Split
+```
+>>> 'a b   c'.split(' ')
+['a', 'b', '', '', 'c']
+
+>>> re.split(r'[\s\,\;]+', 'a,b;; c  d')
+['a', 'b', 'c', 'd']
+```
+
+#### Group
+```
+>>> m = re.match(r'^(\d{3})-(\d{3,8})$', '010-12345')
+>>> m
+<_sre.SRE_Match object; span=(0, 9), match='010-12345'>
+>>> m.group(0)
+'010-12345'
+>>> m.group(1)
+'010'
+>>> m.group(2)
+'12345'
+```
+
+#### Greedy Matching
+Which is by default.
+```
+>>> re.match(r'^(\d+)(0*)$', '102300').groups()
+('102300', '')
+
+>>> re.match(r'^(\d+?)(0*)$', '102300').groups()
+('1023', '00')
+```
+
+### datetime
+### collections
+# TODOOO
+
+
 
 10.1. Operating System Interface
 10.2. File Wildcards
@@ -1054,10 +1098,150 @@ environ({'VERSIONER_PYTHON_PREFER_32_BIT': 'no', 'TERM_PROGRAM_VERSION': '326', 
 10.12. Batteries Included
 
 ## Brief Tour of the Standard Library — Part II
-11.1. Output Formatting
 11.2. Templating
 11.3. Working with Binary Data Record Layouts
-11.4. Multi-threading
+
+### Multi-processing and Threading
+#### Multi-processing
+
+```
+    from multiprocessing import Process
+    import os
+
+    # code of subprocess
+    def run_proc(name):
+        print('Run child process %s (%s)...' % (name, os.getpid()))
+
+    if __name__=='__main__':
+        print('Parent process %s.' % os.getpid())
+        p = Process(target=run_proc, args=('test',))
+        print('Child process will start.')
+
+        p.start()
+        p.join()    # go on after sub-process is finished, can be used for communication between processes
+
+        print('Child process end.')
+```
+
+#### Pool
+To create a pool of processes
+
+#### subprocess Module
+```
+    import subprocess
+
+    r = subprocess.call(['nslookup', 'www.python.org'])     # the same as execute: $ nslookup www.python.org
+    print('Exit code:', r)
+```
+
+if the subprocess need more inputs, use `communicate()` function:
+
+```
+import subprocess
+
+print('$ nslookup')
+p = subprocess.Popen(['nslookup'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+output, err = p.communicate(b'set q=mx\npython.org\nexit\n')
+print(output.decode('utf-8'))
+print('Exit code:', p.returncode)
+```
+上面的代码相当于在命令行执行命令nslookup，然后手动输入：
+
+```
+set q=mx
+python.org
+exit
+
+```
+
+#### Communication between processes
+Exchanging data through `Queue`, `Pipes` and more.
+
+#### Threading
+Two modules: `_thread` and `threading` which is the encapsulation of `_thread` module.
+
+Launch a thread is passing a function to a `Thread` instance, then `start()`.
+
+```
+t = threading.Thread(target=fn, name='name')
+t.start()
+t.join()
+```
+
+#### Lock
+In multi-processing, each process have a copy of each variable. but in multi-threading, all variables are shared among all threads. 
+
+```
+lock = threading.Lock()     # create a lock
+
+def run_thread(n):
+    for i in range(100000):
+        # acquire lock before operation
+        lock.acquire()      # only one thread can acquire lock successfully.
+        try:
+            # 放心地改吧:
+            change_it(n)
+        finally:
+            lock.release()  # remember!
+```
+
+Several locks can cause dead lock. And pyhton multi-threads can't use multi cores very efficiently because of the Global Interpreter Lock (GIL).
+
+#### ThreadLocal
+全局变量必须加锁影响性能，局部变量必须层层传递很麻烦。
+- 法1: 用一个`dict`存放所有对象，以每个`thread`自身(`threading.current_thread()`)作为`key`来获取对应对象。
+    - 代码有点丑
+- 法2: ThreadLocal
+```
+import threading
+
+# 创建全局ThreadLocal对象:
+local_school = threading.local()
+
+def process_student():
+    # 获取当前线程关联的student:
+    std = local_school.student
+    print('Hello, %s (in %s)' % (std, threading.current_thread().name))
+
+    def process_thread(name):
+        # 绑定ThreadLocal的student:
+        local_school.student = name
+        process_student()
+
+t1 = threading.Thread(target= process_thread, args=('Alice',), name='Thread-A')
+t2 = threading.Thread(target= process_thread, args=('Bob',), name='Thread-B')
+t1.start()
+t2.start()
+t1.join()
+t2.join()
+```
+
+`ThreadLocal` 常用在为每个线程绑定一个数据库连接、HTTP请求、用户信息等。
+
+#### Process vs. Thread
+Multi-process and multi-threads are the two most common methods to do multi-tasks. And we normally use the Master-Worker pattern. 'Master' dispatch jobs and 'Worker' will do execute.
+
+The advantage of Multi-process is reliable. The failure of any process would
+not influence the main process or other processes. But if main process failed, which is not very likely, then all processes failed. The disadvantage of multi-process is the cost of creating processes and the number of processes is limited by the number of cores and memery.
+
+Multi threads are normally slightly faster than multi processes. And one of it's fatal disadvantage is the failure of any of the threads can cause the failure of the whole process.
+
+#### Computationally Intensive and IO Intensive
+Computationally intensive tasks mainly cost CPUs. For which, the efficiency of
+the code is important so C is better than Python on this kind of tasks. And too much processes can increasee the time spent on switching task. For using CPUs appropriately, the number of processes should equal to the number of CPUs on Computationally intensive tasks.
+
+IO intensive tasks may uses network, dist a lot which cost little CPU resource
+and spent a lot of time waiting for IO operations. Hence, for IO intensive
+tasks usage of CPU can increase if the number of processes increase. And on
+this kind of tasks choose the language that's efficient for developing like
+script language.
+
+#### Async IO
+Async IO makes it possible to do multi tasks efficiently using single process and single thread and we call this new model as Event Driven Model. 
+
+#### Distributed Processes
+Implemented by using `multiprocessing.managers.BaseManager` module and exposing original `Queue` throught the internet.
+
 11.5. Logging
 11.6. Weak References
 11.7. Tools for Working with Lists
@@ -1079,5 +1263,7 @@ environ({'VERSIONER_PYTHON_PREFER_32_BIT': 'no', 'TERM_PROGRAM_VERSION': '326', 
 16.1.2. Executable Python Scripts
 16.1.3. The Interactive Startup File
 16.1.4. The Customization Modules
+
+
 
 
