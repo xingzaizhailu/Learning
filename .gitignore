@@ -77,6 +77,11 @@ erl_crash.dump
 *.ez
 *.beam
 
+### C#
+[Dd]ebug/
+[Bb]in/
+[Oo]bj/
+
 ### Personal
 .Db_Store
 /db
