@@ -85,6 +85,7 @@ erl_crash.dump
 ### Personal
 .Db_Store
 /db
+*.db
 log
 *.secret.*
 *.tmp
