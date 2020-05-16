@@ -93,3 +93,4 @@ log
 ### This project
 /algorithms/algo
 .vscode
+*.code-workspace
