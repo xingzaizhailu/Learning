@@ -1,0 +1,19 @@
+@page
+<!-- Model type for this Razor page is set to SuppliersModel -->
+@model NorthwindWeb.Pages.SuppliersModel
+
+<div class="row">
+  <h1 class="display-2">Suppliers</h1>
+  <table class="table">
+    <thead class="thead-inverse">
+      <tr><th>Company Name</th></tr>
+    </thead>
+    <tbody>
+      <!-- iter through the Suppliers property of the Model -->
+      @foreach(string name in Model.Suppliers)
+      {
+          <tr><td>@name</td></tr>
+      }
+    </tbody>
+  </table>
+</div>
