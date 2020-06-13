@@ -7,7 +7,10 @@ Using
 [class members](https://docs.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/classes-and-objects#members)
 
 # Basics
-
+Create a new console app:
+```
+dotnet new console -lang "F#" -name "ExploringConsole"
+```
 ## Variables
 
 #### nameof()
@@ -157,9 +160,96 @@ Use the null-coalescing operator `??` when you want to assign a variable to a re
 var result = authorname?.Length ?? 3;		// result == 3
 ```
 
-## Displaying output
+## Exploring console applications further
 
+### Displaying output
 
+Using `Write` and `WriteLine`.
+
+#### Formatting using numbered positional arguments
+
+```
+int nApples = 12;
+decimal perApplePrice = 0.35M;
+
+Console.WriteLine(
+	format: "{0} apples costs {1:C}",
+	arg0: nApples,
+	arg1: perApplePrice * nApples);
+
+string formatted = string.Format(
+	format: "{0} apples costs {1:C}",
+	arg0: nApples,
+	arg1: perApplePrice * nApples);
+```
+
+#### Formatting using interpolated strings
+
+A `string` prefixed with `$`:
+
+```
+Console.WriteLine($"{nApples} apples costs {perApplePrice * nApples:C}");
+// 12 apples costs ￡4.20
+```
+
+#### Understanding format strings
+
+The full syntax of a format item is:
+
+```
+{ index [, alignment ] [: formatString]}
+```
+
+Positive integers are right-aligned and negative integers are left-aligned with the number width of characters.
+
+- `N0`: thousand separators and no decimal places
+- `C`: currency which is determined by the current thread.
+  - e.g. If code is ran on a PC in UK you'll get pounds sterling with commas as the thousand separators
+  - if on a PC in Germany, get Euros with dots as the thousand separators
+
+### Get text input from the user
+
+The `ReadLine` method waits for user to type some text, then as soon as the user presses _Enter_, whatever the user has typed is returned as a `string ` value.
+
+### Importing a namespace
+
+```
+using System;
+Console.WriteLine("");
+```
+
+### Getting key input from the user
+
+```
+Write("Press any key combination: ");
+ConsoleKeyInfo key = ReadKey();
+WriteLine();
+WriteLine($"Key: {key.Key}", Char: {key.KeyChar}, Modifiers: {key.Modifiers});
+// k => Key: K, Char: k, Modifiers: 0
+// K => Key: K, Char: K, Modifiers: Shift
+// k => Key: F12, Char: , Modifiers: 0
+```
+
+### Getting arguments
+
+```
+dotnet run firstarg second-arg third:arg "fourth arg"
+```
+
+### More references
+
+- [**C# Keywords**](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/index)
+- [**Main() and command-line arguments (C# Programming Guide)**](https:// docs.microsoft.com/en-us/dotnet/csharp/programming-guide/main- and-command-args/)
+- [**Types (C# Programming Guide)**](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/types/)
+- [**Statements, Expressions, and Operators (C# Programming Guide)**](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/)
+- [**Strings (C# Programming Guide)**](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/strings/)
+- [**Nullable Types (C# Programming Guide)**](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/nullable-types/)
+- [**Nullable reference types**](https://docs.microsoft.com/en-us/dotnet/csharp/nullable-references)
+- [**Console Class**](https://docs.microsoft.com/en-us/dotnet/api/system.console?view=netcore-3.0)
+
+## TODO: Chap 3 - Controlling Flow and Converting Types
+
+## TODO: Chap 4 - Debu
 
 
 ## Function
