@@ -77,9 +77,15 @@ erl_crash.dump
 *.ez
 *.beam
 
+### C#
+[Dd]ebug/
+[Bb]in/
+[Oo]bj/
+
 ### Personal
 .Db_Store
 /db
+*.db
 log
 *.secret.*
 *.tmp
@@ -87,3 +93,4 @@ log
 ### This project
 /algorithms/algo
 .vscode
+*.code-workspace
