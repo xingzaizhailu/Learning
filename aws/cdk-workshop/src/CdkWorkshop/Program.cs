@@ -8,7 +8,7 @@ namespace CdkWorkshop
         {
             var app = new App();
 
-            // new CdkWorkshopStack(app, "CdkWorkshopStack");
+            new CdkWorkshopStack(app, "CdkWorkshopStack");
             new ConstructTryStack(app, "ConstructTryStack");
 
             app.Synth();

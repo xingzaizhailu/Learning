@@ -8,6 +8,7 @@ namespace CdkWorkshop
     {
         public ConstructTryStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
         {
+            // Defines a new lambda resource
             var greeting = new Function(this, "GreetingHandler", new FunctionProps
             {
                 Runtime = Runtime.NODEJS_10_X,

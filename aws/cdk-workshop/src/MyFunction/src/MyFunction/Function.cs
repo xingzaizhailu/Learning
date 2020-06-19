@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SNSEvents;
 
@@ -22,7 +24,7 @@ namespace MyFunction
         /// <returns></returns>
         public string FunctionHandler(SNSEvent input, ILambdaContext context)
         {
-            Console.WriteLine(input.ToString());
+            Console.WriteLine(JsonConvert.SerializeObject(input));
             return "Invoked";
         }
     }
