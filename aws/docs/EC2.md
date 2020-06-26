@@ -27,9 +27,31 @@ Script runs only once when the instance started.
 
 ### EC2 Instance Types
 - On Demand: Short workload, predictable pricing
-- Reserved: Long workloads (>= 1Y)
-    - Convertible Reserved: Long workloads with flexible insatnces
+    - Highest cost
+    - Suitable for short-term and un-interrupted workloads
+- Reserved: Long workloads (>= 1Y) - Up to 75% discount compared to On-demand
+    - Convertible Reserved: Long workloads with flexible instances (54% discount)
     - Scheduled Reserved: e.g. 3 to 6 pm every Thursday
 - Spot Instance: short workloads, for cheap, can lose instances (less reliable)
-- Dedicated Instances: no other customers will share your hardware
+- Dedicated Instances:
+    - No other customers will share your hardware (share within your account)
+    - Hardware after stop/ start may move
 - Dedicated Hosts: book an entire physical server, control instance placement
+
+Great combo: Reserved instances for baseline + On-demand & Spot for peaks
+
+
+
+### Elastic Network Interfaces (ENI)
+
+Logical component in a VPC that represents a virtual network card.
+
+The ENI can have the following attributes:
+
+- Primary private IPv4, one or more secondary IPv4
+- One Elastic IP per private IPv4
+- One Elastic IP per public IPv4
+- One or more security groups
+- A MAC address
+
+You can create ENI independently and attach them on the fly on EC2 instances for failover. But it's bound to a specific AZ.
