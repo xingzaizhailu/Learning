@@ -17,6 +17,7 @@ namespace startup
     {
         public Startup(IConfiguration configuration)
         {
+            Console.WriteLine("Startup construtor.");
             Configuration = configuration;
         }
 
@@ -25,12 +26,14 @@ namespace startup
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Console.WriteLine("Startup.ConfigureServices");
             services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            Console.WriteLine("Startup.Configure");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -42,9 +45,13 @@ namespace startup
 
             app.UseAuthorization();
 
+            app.UseStaticFiles();
+
+            app.UseWebSockets();
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers();  // register MVC
             });
         }
     }
