@@ -8,21 +8,21 @@ Using
 
 # Basics
 Create a new console app:
-```
+```shell
 dotnet new console -lang "F#" -name "ExploringConsole"
 ```
 ## Variables
 
 #### nameof()
 
-```
+```csharp
 int height;
 nameof(height)
 ```
 
 ### Numbers
 
-```
+```csharp
 int decimalNotation = 2_000_000;
 int binaryNotation = 0b_0001_1110_0100_1000_0000;
 int hexadecimalNotation = 0x_001E_8480;
@@ -30,7 +30,7 @@ decimalNotation == binaryNotation;			 	# true
 decimalNotation == hexadecimalNotation;  		# true
 ```
 
-```
+```csharp
 sizeof(int) == 4
 sizeof(double) == 8    // store wider range of number than decimal
 sizeof(decimal) == 16  // more accurate. 12.75 is storeed as 1275 and
@@ -56,14 +56,14 @@ double.Infinity
 
 #### Literal strings
 
-```
+```csharp
 // Escape characters like \t converted as a tab
 string filePath = "C:\televisions\sony\bravia.txt";
 ```
 
 #### Verbatim strings
 
-```
+```csharp
 string filePath = @"C:\televisions\sony\bravia.txt";
 ```
 
@@ -75,7 +75,7 @@ Prefixed with `$` to enable embedded formatted variables.
 
 A special type can store any type of data. (Its flexibility brings messier code and possibly poor performance. Avoid it whenever possible.)
 
-```
+```csharp
 object height = 1.88;
 object name = "Amir";
 
@@ -105,7 +105,7 @@ The `string` type is a `reference type`. This means that `string` variables cont
 
 You can determine the default value of a type using the `default()` operator.
 
-```
+```csharp
 default(int)			// 0
 default(bool)			// False
 default(DateTime) // 01/01/0001 00:00:00
@@ -116,7 +116,7 @@ default(string)   // ""
 
 #### nullable value type
 
-```
+```csharp
 int thisCannotBeNull = null; // compile error!
 int? thisCouldBenull = null;
 Console.WriteLine(thisCouldBeNull.GetValueOrDefault());   // 0
@@ -126,7 +126,7 @@ Console.WriteLine(thisCouldBeNull.GetValueOrDefault());   // 0
 
 To enable the features at the project level:
 
-```
+```csharp
 <PropertyGroup>
 	<Nullable>enable</Nullable>
 </PropertyGroup>
@@ -134,13 +134,13 @@ To enable the features at the project level:
 
 To disable the feature at the file level:
 
-```
+```csharp
 #nullable disable
 ```
 
 To enable the feature at the file level:
 
-```
+```csharp
 #nullable enable
 ```
 
@@ -148,7 +148,7 @@ To enable the feature at the file level:
 
 Use the null-conditional operator `?.` when you are trying to use a member of a variable that might be `null`.
 
-```
+```csharp
 string authorName = null;
 int x = authorName.Length;   // cause 'NullReferenceException'
 int? y = authorName?.Length; // y == null
@@ -156,7 +156,7 @@ int? y = authorName?.Length; // y == null
 
 Use the null-coalescing operator `??` when you want to assign a variable to a result or an alternative value when the variable is null.
 
-```
+```csharp
 var result = authorname?.Length ?? 3;		// result == 3
 ```
 
@@ -168,7 +168,7 @@ Using `Write` and `WriteLine`.
 
 #### Formatting using numbered positional arguments
 
-```
+```csharp
 int nApples = 12;
 decimal perApplePrice = 0.35M;
 
@@ -187,7 +187,7 @@ string formatted = string.Format(
 
 A `string` prefixed with `$`:
 
-```
+```csharp
 Console.WriteLine($"{nApples} apples costs {perApplePrice * nApples:C}");
 // 12 apples costs ￡4.20
 ```
@@ -196,7 +196,7 @@ Console.WriteLine($"{nApples} apples costs {perApplePrice * nApples:C}");
 
 The full syntax of a format item is:
 
-```
+```csharp
 { index [, alignment ] [: formatString]}
 ```
 
@@ -213,14 +213,14 @@ The `ReadLine` method waits for user to type some text, then as soon as the user
 
 ### Importing a namespace
 
-```
+```csharp
 using System;
 Console.WriteLine("");
 ```
 
 ### Getting key input from the user
 
-```
+```csharp
 Write("Press any key combination: ");
 ConsoleKeyInfo key = ReadKey();
 WriteLine();
@@ -232,7 +232,7 @@ WriteLine($"Key: {key.Key}", Char: {key.KeyChar}, Modifiers: {key.Modifiers});
 
 ### Getting arguments
 
-```
+```csharp
 dotnet run firstarg second-arg third:arg "fourth arg"
 ```
 
@@ -275,7 +275,7 @@ dotnet run firstarg second-arg third:arg "fourth arg"
 
 The `if` statement can use the `is` keyword in combination with declaring a local variable to make your code safer.
 
-```
+```csharp
 object o = "3"; // add and remove the "" to change the behavior
 if (o is int i)
 {
@@ -297,7 +297,7 @@ Every `case` section must end with:
 - Or the `goto` keyword - goto a `case` or a Label
 - Or they should have no statements
 
-```
+```csharp
 A_label:
   var number = (new Random()).Next(1, 7);
   WriteLine($"My random number is {number}");
@@ -326,7 +326,7 @@ A_label:
 
 With pattern matching, the `case` can be patterns besides literal values.
 
-```
+```csharp
 using System.IO;
 
 string path = "/Users/Workspace/Code/Chapter03";
@@ -361,7 +361,7 @@ WriteLine(msg);
 
 Separated by "," and "_" is used to represent the default return value.
 
-```
+```csharp
 msg = s switch
 {
 	FileStream writeableFile when s.CanWrite
@@ -391,7 +391,7 @@ Technically, the `foreach` statement will work on any type that follows these ru
 
 The compiler turns the `foreach` statement in the preceding example into something similar to the following pseudocode:
 
-```
+```csharp
 IEnumerator e = names.GetEnumerator();
 while (e.MoveNext)
 {
@@ -404,13 +404,13 @@ while (e.MoveNext)
 
 Two varieties: implicit (automatically and safe) and explicit (manually and may lose info).
 
-```
+```csharp
 int d = (int)9.8; // 9
 ```
 
 #### Converting with the `System.Convert` type
 
-```
+```csharp
 using static System.Convert;
 double g = 9.8;
 int h = ToInt32(g);
@@ -423,7 +423,7 @@ Using `ToInt()` - Banker's Rounding:
 
 - It will round *up* if the decimal part is the midpoint .5 and the non-decimal part is odd, but it will round *down* if the non-decimal part is even.
 
-```
+```csharp
 ToInt(9.5) is 10
 ToInt(10.5) is 10
 ```
@@ -432,7 +432,7 @@ ToInt(10.5) is 10
 
 By using the `Round` method of the `Math` class enable the "away from zero" rounding rule (also known as rounding "up" or primary school rule).
 
-```
+```csharp
 double[] doubles = new[]{ 9.49, 9.5, 9.51, 10.49, 10.5, 10.51 };
 foreach (double n in doubles)
 {
@@ -461,7 +461,7 @@ Sometimes you don't want to send the raw bits, because you don't know how those 
 
 The safest way to do is to convert the binary object (e.g. image or video) into a `string` of safe characters. This is called **Base64** encoding.
 
-```
+```csharp
 byte[] binaryObject = new byte[128];
 
 // populate array with random bytes
@@ -483,7 +483,7 @@ WriteLine($"Bianry Object as Base64: {encoded}");
 
 `Parse` is opposite to `ToString`. Only a few types have a `Parse` method, including all the number types and the `DateTime`.
 
-```
+```csharp
 int age = int.Parse("27");
 DateTime birthday = DateTime.Parse("4 July 1980");
 WriteLine($"My birthday is {birthday}.");   // 04/07/1980 00:00:00
@@ -496,7 +496,7 @@ int count = int.Parse("abc");  // => Unhandled Exception
 
 It returns `true` or `false`.
 
-```
+```csharp
 Write("How many eggs are there? ");
 int count;
 string input = Console.ReadLine();
@@ -516,7 +516,7 @@ else
 
 ##### Catching all exceptions
 
-```
+```csharp
 catch (Exception ex)
 {
 	WriteLine($"{ex.GetType()} says {ex.Message}");
@@ -527,7 +527,7 @@ catch (Exception ex)
 
 The order in which you catch exceptions is important.
 
-```
+```csharp
 catch (FormationException)
 {
 	...
@@ -544,7 +544,7 @@ catch (Exception ex)
 
 The `checked` statement tells .NET to throw an exception when an overflow happens.
 
-```
+```csharp
 try
 {
 	checked
@@ -574,7 +574,7 @@ A related keyword is `unchecked`. This keyword switches off overflow checks perf
 
 Improve the tooltip in VS Code by adding extra information with three '/'(C# XML Documentation Comments extension required).
 
-```
+```csharp
 /// <summary>
 /// Pass a 32-bit integer and it will be converted into its ordinal equivalent.
 /// </summary>
@@ -596,11 +596,11 @@ static string CardinalToOrdinal(int number)
 
 #### SharpPad extension for VS code
 
-```
+```shell
 $ dotnet add package SharpPad
 ```
 Modify Program.cs to import the `SharpPad` and `System.Threading.Tasks` namespaces, change the return type of the Main method to async Task, define a complex object variable, and then `dump` it to the SharpPad window, as shown in the following code:
-```
+```csharp
 using System;
 using SharpPad;
 using System.Threading.Tasks; using static System.Console;
@@ -642,7 +642,7 @@ You can write your own by inheriting from `TraceListener` type.
 
 The `DefaultTraceListener` class is configured automatically and writes to VS Code's DEBUG CONSOLE window.
 
-```
+```csharp
 using System.Diagnostics;
 
 namespace Instrumenting
@@ -662,7 +662,7 @@ namespace Instrumenting
 
 We can configure another trace listener that will write to a text file.
 
-```
+```csharp
 using System.Diagnostics;
 using System.IO;
 
@@ -681,7 +681,7 @@ namespace Instrumenting
 }
 ```
 
-```
+```shell
 $ dotnet run --configuration Release		// avoid logging to console and only the "trace" line will show in file
 $ dotnet run --configuration Debug      // both msgs
 ```
@@ -698,7 +698,7 @@ $ dotnet run --configuration Debug      // both msgs
 
 Some packages needed to enable loading configuration settings from a JSON `appsettings.json` file.
 
-```
+```shell
 $ dotnet add package Microsoft.Extensions.Configuration
 $ dotnet add package Microsoft.Extensions.Configuration.Binder
 $ dotnet add package Microsoft.Extensions.Configuration.Json
@@ -707,7 +707,7 @@ $ dotnet add package Microsoft.Extensions.Configuration.FileExtensions
 
 Modify `appsettings.json` as:
 
-```
+```csharp
 {
 	"PacktSwitch": {
 		"Level": "Info"   // or "Level": "2"
@@ -715,7 +715,7 @@ Modify `appsettings.json` as:
 }
 ```
 
-```
+```csharp
 var builder = new ConfigurationBuilder()
 	.SetBasePath(Directory.GetCurrentDirectory())
 	.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
@@ -758,7 +758,7 @@ Concepts:
 
 ### Referencing an assembly
 
-```
+```csharp
 <ItemGroup>
 	<ProjectReference Include="../PacktLibrary/PacktLibrary.csproj" />
 </ItemGroup>
@@ -772,80 +772,17 @@ All types ultimately inherit directly or indirectly from a special type named `S
 
 #### Members
 
-##### Fields
-
-Used to store data. There are three specialised categories of field:
-
-- Constant: The data never changes. The compiler copies the data into any code that reads it.
-- Read-only: The data cannot change after the class is instantiated, but the data can be calculated or loaded from an external source at the time of instantiation.
-- Event: The data references one or more methods that want to execute when something happens, such as clicking on a button, or responding to a request from other code.
-
-###### Defining fields
-
-```
-public class Person : object
-{
-	// fields
-	public string Name;
-	public DataTime DateOfBirth;
-}
-```
-
-###### Storing a value using an enum type
-
-
-
-##### Methods
-
-Used to execute statements. There are 4 categories of method:
-
-- Constructor: The statements execute when you use the `new` keyword to allocate memory and instantiate a class.
-- Property: The statements execute when you get or set data. Properties are the preferred way to encapsulate fields unless the memory address of the field needs to be exposed.
-- Indexer: The statement execute when you get or set data using array syntax `[]`
-- Operator: The statements execute when you use an operator like `+` or `/` on operands of your type.
-
-##### Understanding access modifiers
-
-By default it is `internal` for class and `private` for field.
-
-| Access Modifier      | Description                                                  |
-| -------------------- | ------------------------------------------------------------ |
-| `private`            | Member is accessible inside the type only. (Default)         |
-| `internal`           | Member is accessible inside the type and any type in the same assembly. |
-| `protected`          | Member is accessible inside the type and any type  that inherits from the type |
-| `public`             | Member is accessible everywhere.                             |
-| `internal protected` | Member is accessible inside the type, any type in the same assembly, and any type that inherits from the type. Equivalent to a fictional access modifier named `internal_or_protected`. |
-| `private protected`  | Member is accessible inside the type, or any type that inherits from the type and is in the same assembly. (Equal to `internal_and_protected`) |
-
-#### Class constructor
-
-```csharp
-static ClassName()  // only executed once when the class is loaded
-{
-	...
-}
-```
-
-#### Instance constructor
-
-```csharp
-public ClassName()  // executed every time a new instance is created
-{
-    ...
-}
-```
-
-#### Field and Property
+##### Field and Property
 
 ``` csharp
 class Student
 {
     public int StuId;      // field
-    
+
     private int name;
     private int age;
-    private bool canWork;  // property that's dynamically calculated
-    
+    private bool canWork;  // properties that's dynamically calculated
+
     public int Name{ get; set; }
     public int Age         // property
     {
@@ -856,11 +793,12 @@ class Student
             this.CalculateCanWork();  // suitable for get_canWork() is called more frequent than set_age(); otherwise calculate when get_canWork is called.
         }
     }
+
     pulic bool CanWork
     {
         get { return canWork; }
     }
-    
+
     private void CalculateCanWork()
     {
         if (this.age >= 16)
@@ -875,9 +813,198 @@ class Student
 }
 ```
 
+##### Fields
+
+Used to store data. There are three specialised categories of field:
+
+- Constant: The data never changes. The compiler copies the data into any code that reads it.
+- Read-only: The data cannot change after the class is instantiated, but the data can be calculated or loaded from an external source at the time of instantiation.
+- Event: The data references one or more methods that want to execute when something happens, such as clicking on a button, or responding to a request from other code.
+
+###### Defining fields
+
+```csharp
+public class Person : object
+{
+	// fields
+	public string Name;
+	public DataTime DateOfBirth;
+}
+```
+
+###### Storing a value using an enum type
+
+A limited set of options for a value. Internally, it's stored in a lookup table from integer to string.
+
+```csharp
+public enum EnumAType
+{
+	Option1,		// 0
+	Option2,		// 1
+	Option3			// 2
+}
+```
+
+```csharp
+public Class Person
+{
+	public EnumAType FavoriteEnumA;
+}
+
+bob.FavoriteEnumA = EnumAType.Option2;
+```
+
+You can assign int values that are not listed in the enum. They will output as the int value instead of a name since a match will not be found.
+
+###### Storing multiple values using an enum type
+
+We could create a collection of instances of the enum, but there is a better way. We can combine multiple choices into a single value using **flags**, by decorating with `System.Flags` attribute.
+
+```csharp
+namespace Packt.Shared
+{
+  [System.Flags]		// when the value is returned it can automatically match with multiple values as a comma-separated string instead of returning an int value.
+  public enum WondersOfTheAncientWorld : byte		// explicitly use byte to save memory
+  {
+    None 											= 0b_0000_0000, // i.e. 0
+    GreatPyramidOfGiza				= 0b_0000_0001, // i.e. 1
+    HangingGardensOfBabylon   = 0b_0000_0010, // i.e. 2
+    StatueOfZeusAtOlympia		  = 0b_0000_0100, // i.e. 4
+    TempleOfArtemisAtEphesus  = 0b_0000_1000, // i.e. 8
+    MausoleumAtHalicarnassus  = 0b_0001_0000, // i.e. 16
+    ColossusOfRhodes				  = 0b_0010_0000, // i.e. 32
+    LighthouseOfAlexandria	  = 0b_0100_0000  // i.e. 64
+  }
+}
+```
+
+If we want to indicate that our bucket list includes the *Hanging Gardens* and *Mausoleum at Halicarnassus* ancient world wonders, then we would want the 16 and 2 bits set to 1. In `Person` class:
+
+```csharp
+public WondersOfTheAncientWorld BucketList;
+
+bob.BucketList = WondersOfTheAncientWorld.HangingGardensOfBabylon
+								 | WondersOfTheAncientWorld.MausoleumAtHalicarnassus;
+// bob.BucketList = (WondersOfTheAncientWorld)18;
+WriteLine($"{bob.Name}'s bucket list is {bob.BucketList}");
+// => Bob Smith's bucket list is HangingGardensOfBabylon, MausoleumAtHalicarnassus
+```
+
+###### Making a field static
+
+- *Instance members:* a different value of each field exists for each instance of the class that is created.
+- *Static members*: only has one value that is shared across all instances.
+
+```csharp
+namespace Packt.Shared
+{
+  public class BankAccount
+  {
+    public string AccountName;					// instance member
+    public decimal Balance;							// instance member
+    public static decimal InterestRate; // shared member, get by BankAccount.InterestRate
+  }
+}
+```
+
+###### Making a field constant
+
+The value of a field never change. In `Person` class:
+
+```csharp
+public const string Species = "Homo Sapien"
+```
+
+```csharp
+WriteLine($"{bob.Name} is a {Person.Species}"); // To get the val of a constant field, must write the name of the class.
+
+// System.Int32.MaxValue;
+// System.Math.PI;
+```
+
+###### Making a field read-only
+
+```csharp
+public readonly string HomeCountry = "US";					// an instance read-only field
+public static readonly string HomePlanet = "Earth";	// read-only field shared across all instances of the type
+```
+
+###### Setting fields with default literals
+
+```csharp
+public ThingOfDefaults()
+{
+  Population = default(int); // C# 2.0 and later
+  When = default(DateTime);
+  Name = default(string);
+  People = default(List<Person>);
+}
+```
+
+```csharp
+public ThingOfDefaults()
+{
+  Population = default; 		// C# 7.1 and later
+  When = default;
+  Name = default;
+  People = default;
+}
+```
+
+##### Understanding access modifiers
+
+By default it is `internal` for class and `private` for field.
+
+| Access Modifier      | Description                                                  |
+| -------------------- | ------------------------------------------------------------ |
+| `private`            | Member is accessible inside the type only. (Default)         |
+| `internal`           | Member is accessible inside the type and any type in the same assembly. |
+| `protected`          | Member is accessible inside the type and any type  that inherits from the type |
+| `public`             | Member is accessible everywhere.                             |
+| `internal protected` | Member is accessible inside the type, any type in the same assembly, and any type that inherits from the type. Equivalent to a fictional access modifier named `internal_or_protected`. |
+| `private protected`  | Member is accessible inside the type, or any type that inherits from the type and is in the same assembly. (Equal to `internal_and_protected`) |
+
+##### Methods
+
+Methods are members of a type that execute a block of statements. There are 4 categories of method:
+
+- Constructor: The statements execute when you use the `new` keyword to allocate memory and instantiate a class.
+- Property: The statements execute when you get or set data. Properties are the preferred way to encapsulate fields unless the memory address of the field needs to be exposed.
+- Indexer: The statement execute when you get or set data using array syntax `[]`
+- Operator: The statements execute when you use an operator like `+` or `/` on operands of your type.
+
+###### Class constructor
+
+```csharp
+static ClassName()  // only executed once when the class is loaded
+{
+	...
+}
+```
+
+###### Instance constructor
+
+```csharp
+public ClassName()  // executed every time a new instance is created
+{
+    ...
+}
+```
+
+###### Combining multiple returned values using tuples
+
+```csharp
+public (string, int) GetFruit()
+{
+	return ("Apples", 5);
+}
+
+(string, int) fruit = bob.GetFruit();
+```
+
+
+
 ### Indexer
-
-
 
 
 
@@ -886,21 +1013,21 @@ class Student
 `Func` is a delegate that points to a method that accepts one or more arguments and returns a value. `Action` is a delegate that points to a method which in turn accepts one or more arguments but returns no value.
 
 ### Action
-```
+```csharp
 	Action action = new Action(obj.method_no_return);
 	action.invoke();    // for short: action();
 ```
 
 ### Func
 
-```
+```csharp
 	Func<int, int, int> func = new Func<int, int, int>(obj.method_return); // return, arg1, arg2
 	func.invoke(x, y);
 ```
 
 ### Self defined delegate class
 
-```
+```csharp
 public delegate double Calc(double x, double y);
 ```
 
