@@ -109,3 +109,27 @@ There are multiple **view engines**. The default view engine is **Razor**, and i
 
 ### Customising an ASP.NET Core MVC website
 
+#### Understanding Razor syntax
+
+Instantiates an order:
+
+```csharp
+@{
+	var order = new Order
+  {
+    OrderID = 123, Product = "Sushi", Price = 8.49M, Quantity = 3
+	};
+}
+<div>Your order for @order.Quantity of @order.Product has a total cost of $@(order.Price * @order.Quantity)</div>
+```
+
+Get the value of any single property using the `@object.property` syntax, you should wrap expressions in parentheses.
+
+#### Defining a typed view
+
+While entering code in a view, remember the following:
+
+- To declare the type for the model, use `@model` (with lowercase m).
+- To interact with the model instance, use `@Model` (with uppercase M).
+
+#### Passing parameters using a route value
