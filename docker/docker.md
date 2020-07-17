@@ -1,9 +1,64 @@
-[tarted](https://docs.docker.com/get-started)
-- Stack (on the top)
-  - Services
-  - Container
+## Resources
+
+- [Get Sarted](https://docs.docker.com/get-started)
+- [Best practices](https://docs.docker.com/develop/dev-best-practices/)
+- [Slimming Down Your Docker Images](https://towardsdatascience.com/slimming-down-your-docker-images-275f0ca9337e)
+- [Volumes: Data in Docker](https://towardsdatascience.com/pump-up-the-volumes-data-in-docker-a21950a8cd8)
+
+## Docker Image
+
+One of the most important aspects of container **isolation** is that each container interacts with its own private filesystem; this filesystem is provided by a Docker image.
+
+An image includes everything needed to run an application - the code or binary, runtimes, dependencies, and any other filesystem objects required.
+
+The Dockerfile tells Docker how to build the image that will be used to make containers. Each Docker image contains a file named *Dockerfile* with no extension. The Dockerfile is assumed to be in the current working directory when `docker build` is called to create an image. A different location can be specified with the file flag (`-f`).
+
+Recall that a container is built from a series of layers. Each layer is read only ([copy-on-write](https://docs.docker.com/storage/storagedriver/#the-copy-on-write-cow-strategy)), except the final container layer that sits on top of the others. The Dockerfile tells Docker which layers to add and in which order to add them.
+
+Each layer is really just a file with the changes since the previous layer. In Unix, pretty much everything is a [file](https://en.wikipedia.org/wiki/Everything_is_a_file).
+
 ## Containers
+
+### Dockerfile instructions
+
+Comments start with `#`.
+
+- `FROM` — specifies the base (parent) image - provides the initial layer(s).
+- `LABEL` —provides metadata. Good place to include maintainer info.
+  - LABEL maintainer="wutexuanleo@outlook.com"
+- `ENV` — sets a persistent environment variable.
+- `RUN` —runs a command and creates an image layer. Used to install packages into containers.
+  - `requirements.txt`
+- `COPY` — copies files and directories to the container. (Recommended whenever possible)
+- `ADD` — copies files and directories to the container. It has two more use cases than `COPY`
+  - Can be used to move files from a remote URL to a container.
+  - Can unpack local TAR files.
+- `CMD` — provides a command and arguments for an executing container. Parameters can be overridden. 
+  - _There can be only one CMD_. Other wise all but the final one are ignored.
+  - CMD can include an executable. If CMD is present without an executable, then an ENTRYPOINT instruction must exist. In that case, both CMD and ENTRYPOINT instructions should be in JSON format.
+  - Command line arguments to `docker run` override arguments provided to CMD in the Dockerfile.
+- `WORKDIR` — sets the working directory for the instructions that follow.
+- `ARG` — defines a variable to pass to Docker at build-time.
+  - Not available in running containers.
+  - You can use ARG to set an ENV at build time
+- `ENTRYPOINT` — provides command and arguments for an executing container. Arguments persist.
+  - Similar to `CMD`, but it's parameters are not overwritten if a container is run with command line parameters. Instead, it will append to the `ENTRYPOINT` instructions's arguments.
+  - e.g. `docker run my_imange bash` adds `bash` to the end of the `ENTRYPOINT`'s existing arguments'.
+- `EXPOSE` — exposes a port.
+  - EXPOSE does not actually publish the port. Rather, it acts as a documentation between the person who builds the image and the person who runs the container.
+  - Use `docker run` with the `-p` flag to publish and map one or more ports at run time. The uppercase `-P` flag will publish all exposed ports.
+- `VOLUME` — creates a directory mount point to access and store persistent data.
+
+Only the instructions FROM, RUN, COPY, and ADD create layers in the final image. Other instructions configure things, add metadata, or tell Docker to do something at run time, such as expose a port or run a command.
+
+The [Docker docs](https://docs.docker.com/v17.09/engine/reference/builder/#understand-how-cmd-and-entrypoint-interact) have a few suggestions for choosing between CMD and ENTRYPOINT for your initial container command:
+
+- Favor ENTRYPOINT when you need to run the same command every time.
+- Favor ENTRYPOINT when a container will be used as an executable program.
+- Favor CMD when you need to provide extra default arguments that could be overwritten from the command line.
+
 ### Define a container with a `Dockerfile`
+
 Create an empty directory, then create a file called `Dockerfile`, copy-and-paste
 the following content into that file, and save it.
 
@@ -12,10 +67,11 @@ the following content into that file, and save it.
     FROM python:2.7-slim
 
     # Set the working directory to /app
+    # All subsequent actions are taken from this dir in your image filesystem.
     WORKDIR /app
 
-    # Copy the current directory contents into the container at /app
-    ADD . /app
+    # Copy the current directory contents into the container at WORKDIR/ present location, ie. `/app`
+    ADD . .
 
     # Install any needed packages specified in requirements.txt
     RUN pip install --trusted-host pypi.python.org -r requirements.txt
@@ -99,7 +155,7 @@ Where is your built image? It’s in your machine’s local Docker image registr
     REPOSITORY            TAG                 IMAGE ID
     friendlyhello         latest              326387cea398
 ```
-Tip: You can use the commands docker images or the newer docker image ls list images.  
+Tip: You can use the commands `docker images` or the newer `docker image ls` list images.  
 
 ### Run the app
 Run the app, mapping your machine’s port 4000 to the container’s published port 80 using -p:  
@@ -120,7 +176,7 @@ You can also use the curl command in a shell to view the same content.
     $ curl http://localhost:4000
     <h3>Hello World!</h3><b>Hostname:</b> 8fc990912a14<br/><b>Visits:</b> <i>cannot connect to Redis, counter disabled</i>
 ```
-You can also see the abbreviated container ID with docker container ls:
+You can also see the abbreviated container ID with `docker container ls`:
 
 ``` shell
     $ docker container ls
@@ -199,7 +255,7 @@ A `docker-compose.yml` file is a YAML file that defines how Docker containers sh
 production.
 
 #### `docker-compose.yml`
-Save this file as docker-compose.yml wherever you want. Be sure you have pushed the image you
+Save this file as `docker-compose.yml` wherever you want. Be sure you have pushed the image you
 created in Part 2 to a registry, and update this .yml by replacing username/repo:tag with your image details.
 
 ```
@@ -232,7 +288,7 @@ This docker-compose.yml file tells Docker to do the following:
 - Define the webnet network with the default settings (which is a load-balanced overlay network).
 
 ### Run your new load-balanced app
-Before we can use the docker stack deploy command we’ll first run:
+Before we can use the `docker stack deploy` command we’ll first run:
 
     docker swarm init
 Note: We’ll get into the meaning of that command in part 4. If you don’t run docker swarm init
@@ -246,7 +302,7 @@ investigate.
 Get the service ID for the one service in our application:
 
     docker service ls
-A single container running in a service is called a task. Tasks are given unique IDs that
+A single container running in a service is called a **task**. Tasks are given unique IDs that
 numerically increment, up to the number of replicas you defined in docker-compose.yml. List the
 tasks for your service:
 
@@ -262,7 +318,7 @@ re-running the docker stack deploy command:
     docker stack deploy -c docker-compose.yml getstartedlab
 Docker will do an in-place update, no need to tear the stack down first or kill any containers.
 
-Now, re-run docker container ls -q to see the deployed instances reconfigured. If you scaled up the
+Now, re-run docker `container ls -q` to see the deployed instances reconfigured. If you scaled up the
 replicas, more tasks, and hence, more containers, are started.
 #### Take down the app and  the swarm
 Take the app down with docker stack rm:
@@ -273,7 +329,7 @@ Take down the swarm.
     docker swarm leave --force
 #### Wrapping up
 To recap, while typing docker run is simple enough, the true implementation of a container in
-production is running it as a service. Services codify a container’s behavior in a Compose file, and this file can be used to scale, limit, and redeploy our app. Changes to the service can be applied in place, as it runs, using the same command that launched the service: docker stack deploy.  
+production is running it as a service. Services codify a container’s behavior in a Compose file, and this file can be used to scale, limit, and redeploy our app. Changes to the service can be applied in place, as it runs, using the same command that launched the service: `docker stack deploy`.  
 ##### Commands use this part
     docker stack ls                                            # List stacks or apps
     docker stack deploy -c <composefile> <appname>  # Run the specified Compose file
@@ -285,10 +341,10 @@ production is running it as a service. Services codify a container’s behavior 
     docker swarm leave --force      # Take down a single node swarm from the manager
 ## Swarms
 ### Introduction
-In part 3, you took an app you wrote in part 2, and defined how it should run in production by
+Previously, you took an app you wrote, and defined how it should run in production by
 turning it into a service, scaling it up 5x in the process.  
 
-Here in part 4, you deploy this application onto a cluster, running it on multiple machines.
+Here, you deploy this application onto a cluster, running it on multiple machines.
 Multi-container, multi-machine applications are made possible by joining multiple machines into
 a “Dockerized” cluster called a swarm.
 ### Understanding Swarm clusters
@@ -351,7 +407,7 @@ docker-machine ssh to have myvm2 join your new swarm as a worker:
     $ docker-machine ssh myvm2 "docker swarm join \
     --token <token> \
     <ip>:2377"
-
+    
     This node joined a swarm as a worker.
 Congratulations, you have created your first swarm!  
 
@@ -409,7 +465,7 @@ Only this time you’ll see that the services (and associated containers) have b
 between both myvm1 and myvm2.
 
     $ docker stack ps getstartedlab
-
+    
     ID            NAME                  IMAGE                   NODE   DESIRED STATE
     jq2g3qp8nzwx  getstartedlab_web.1   john/get-started:part2  myvm1  Running
     88wgshobzoxl  getstartedlab_web.2   john/get-started:part2  myvm2  Running
@@ -667,7 +723,5 @@ Deploy your app.
 
 #### Connect Docker Cloud
 ### Introduction
-# SKIPPED HERE
 # TODOOOO
 ## Deploy your app
-#
