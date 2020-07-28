@@ -84,6 +84,7 @@ erl_crash.dump
 
 ### Personal
 .Db_Store
+.DS_Store
 /db
 *.db
 log
