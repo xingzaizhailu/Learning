@@ -10,7 +10,7 @@ namespace CdkWorkshop
 
             new CdkWorkshopStack(app, "CdkWorkshopStack");
             new ConstructTryStack(app, "ConstructTryStack");
-            new PipelineStack(app, "PipelineStack");
+            new CodeCoveragePipelineStack(app, "CodeCoveragePipelineStack");
 
             app.Synth();
         }

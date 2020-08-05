@@ -1,5 +1,6 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.S3;
+using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.CodeCommit;
 using Amazon.CDK.AWS.CodeBuild;
 using Amazon.CDK.AWS.CodePipeline;
@@ -10,23 +11,21 @@ using StageProps = Amazon.CDK.AWS.CodePipeline.StageProps;
 
 namespace CdkWorkshop
 {
-    public class PipelineStack : Stack
+    public class CodeCoveragePipelineStack : Stack
     {
         internal class Constants
         {
             public const string Project = "CodeCoverage";
-            public const string CodeBuildJob = "CodeBuildJob";
-            public const string ReportGroupName = "coverlet-res";
+            public const string BuildProject = "BuildProject";
+            public const string TestReportGroup = "TestResults";
+            public const string CodeCoverageReportGroup = "CoverletResults";
         }
-        public PipelineStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
+        public CodeCoveragePipelineStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
         {
-            var code = Repository.FromRepositoryName(this, "TestCoverageRepo",
-                "TestCoverageRepo");
-            var artifactsBucket = Bucket.FromBucketName(this, "BucketByName", "codepipeline-ap-southeast-2-822565979272");
-
-            var buildProject = new PipelineProject(this, "buildProject", new PipelineProjectProps
+            var buildProjectName = Constants.Project + Constants.BuildProject;
+            var buildProject = new PipelineProject(this, buildProjectName, new PipelineProjectProps
             {
-                ProjectName = Constants.Project + "BuildProject",
+                ProjectName = buildProjectName,
                 BuildSpec = BuildSpec.FromObject(new Dictionary<string, object>
                 {
                     ["version"] = "0.2",
@@ -49,7 +48,7 @@ namespace CdkWorkshop
                             ["commands"] = new string[]
                             {
                                 "dotnet build",
-                                "dotnet test --collect:\"XPlat Code Coverage\"",
+                                "dotnet test --collect:\"XPlat Code Coverage\" --logger trx",
                                 "xmlPath=$(find $CODEBUILD_SRC_DIR/Calculator.Tests/TestResults -name \"*.xml\")",
                                 "reportgenerator -reports:$xmlPath -targetdir:$CODEBUILD_SRC_DIR/Calculator.Tests/TestResults/"
                             }
@@ -57,14 +56,23 @@ namespace CdkWorkshop
                     },
                     ["reports"] = new Dictionary<string, object>
                     {
-                        [Constants.ReportGroupName] = new Dictionary<string, object>
+                        [Constants.TestReportGroup] = new Dictionary<string, object>
                         {
                             ["files"] = new string[]
                             {
-                                "**/*"
+                                "**/*.trx"
                             },
                             ["base-directory"] = "$CODEBUILD_SRC_DIR/Calculator.Tests/TestResults",
                             ["file-format"] = "VisualStudioTrx"
+                        },
+                        [Constants.CodeCoverageReportGroup] = new Dictionary<string, object>
+                        {
+                            ["files"] = new string[]
+                            {
+                                "**/*.xml"
+                            },
+                            ["base-directory"] = "$CODEBUILD_SRC_DIR/Calculator.Tests/TestResults",
+                            ["file-format"] = "CoberturaXml"
                         }
                     },
                     ["artifacts"] = new Dictionary<string, object>
@@ -83,20 +91,71 @@ namespace CdkWorkshop
                 }
             });
 
-            // new ReportGroup(this, "CodeCoverageReportGroup", new ReportGroupProps
-            // {
-            //     ReportGroupName = Constants.ReportGroupName,
-            //     ExportBucket = artifactsBucket,
-            //     ZipExport = false
-            // });
+            var bucketName = "codepipeline-ap-southeast-2-822565979272";
+            var testReportGroupName = buildProjectName + "-" + Constants.TestReportGroup;
+            var testReportGroup = new CfnReportGroup(this, "TestReportGroup", new CfnReportGroupProps
+            {
+                Name = testReportGroupName,
+                Type = "TEST",
+                ExportConfig = new CfnReportGroup.ReportExportConfigProperty{
+                    ExportConfigType = "S3",
+                    S3Destination = new CfnReportGroup.S3ReportExportConfigProperty{
+                        Bucket = bucketName,
+                        Packaging = "NONE",
+                        Path = "TestReports"
+                    }
+                }
+            });
 
+            var codeCoverageReportGroupName = buildProjectName + "-" + Constants.CodeCoverageReportGroup;
+            var CodeCoverageReportGroup = new CfnReportGroup(this, "CodeCoverageReportGroup", new CfnReportGroupProps
+            {
+                Name = codeCoverageReportGroupName,
+                Type = "CODE_COVERAGE",
+                ExportConfig = new CfnReportGroup.ReportExportConfigProperty{
+                    ExportConfigType = "S3",
+                    S3Destination = new CfnReportGroup.S3ReportExportConfigProperty{
+                        Bucket = bucketName,
+                        Packaging = "NONE",
+                        Path = "CodeCoverageReports"
+                    }
+                }
+            });
+
+            buildProject.AddToRolePolicy(
+                new PolicyStatement(new PolicyStatementProps
+                {
+                    Effect = Effect.ALLOW,
+                    Actions = new []
+                    {
+                        "codebuild:BatchPutCodeCoverages"
+                    },
+                    Resources = new []
+                    {
+                        Fn.Join("", new string[]
+                        {
+                            "arn:",
+                            Fn.Ref("AWS::Partition"),
+                            ":codebuild:",
+                            Fn.Ref("AWS::Region"),
+                            ":",
+                            Fn.Ref("AWS::AccountId"),
+                            ":report-group/",
+                            buildProject.ProjectName,
+                            "-*"
+                        })
+                    }
+                })
+            );
+
+            var code = Repository.FromRepositoryName(this, "TestCoverageRepo", "TestCoverageRepo");
+            var artifactsBucket = Bucket.FromBucketName(this, "BucketByName", bucketName);
             var sourceOutput = new Artifact_("sourceArtifact");
             var buildOutput = new Artifact_("buildArtifact");
-
-            new Pipeline(this, "Pipeline", new PipelineProps
+            var pipelineName = Constants.Project + "Pipeline";
+            new Pipeline(this, pipelineName, new PipelineProps
             {
-
-                PipelineName = Constants.Project + "Pipeline",
+                PipelineName = pipelineName,
                 ArtifactBucket = artifactsBucket,
                 Stages = new[]
                 {
@@ -127,16 +186,8 @@ namespace CdkWorkshop
                             })
                         }
                     },
-                    // new StageProps
-                    // {
-                    //     StageName = "Deploy",
-                    //     Actions = new []
-                    //     {
-                    //     }
-                    // }
                 }
             });
-
         }
     }
 }
