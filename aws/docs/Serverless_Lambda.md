@@ -290,3 +290,226 @@ By default, your Lambda function is launched outside your own VPC (in an AWS-own
 #### Lambda in VPC - Internet Access
 
 A Lambda function in your VPC does not have internet access. Deploying a Lambda function in a public subnet does not give it internet access or a public IP. But you can deploy a Lambda function in a private subnet gives it internet access if you have a NAT Gateway/ Instance. You can use VPC endpoints to privately access AWS services without a NAT.  
+
+### Lambda Function Configuration
+
+- **RAM:**
+  - From 128 MB to 3008 MB in 64 MB increments
+  - The more RAM you add, the more vCPU credits you get
+  - At 1,792 MB, a function has the equivalent of one full vCPU
+  - After 1,792 MB, you get more than one CPU, and need to use multi-threading in your code to benefit from it.
+- If your application is CPU-bound (computation heavy), increase RAM
+- **Timeout:** default 3 seconds, maximum is 900 seconds (15 minutes)
+
+### Lambda Performance
+
+The **execution context** is a temporary runtime environment that initialises any external dependencies of your lambda code.
+
+- You can use it to create for database connections, HTTP clients, SDK clients...
+- The execution context is maintained for some time in anticipation of another Lambda function invocation
+- The next function invocation can "re-use" the context to execution time and save time in initialising connections objects
+- The execution context includes the `/tmp` directory
+
+#### Initialise outside the handler
+
+```python
+import os
+
+def get_user_handler(event, context):
+  # BAD! The DB connection is established at every function invocation
+	DB_URL = os.getenv("DB_URL")
+	db_client = db.connect(DB_URL)
+	user = db_client.get(user_id = event["user_id"])
+	return user
+```
+
+```python
+import os
+
+DB_URL = os.getenv("DB_URL")
+db_client = db.connect(DB_URL)		# Good! The DB connection is established once
+																	# and re-use across invocations
+	
+def get_user_handler(event, context):
+	user = db_client.get(user_id = event["user_id"])
+	return user
+```
+
+#### Lambda Functions `/tmp` space
+
+If your Lambda function needs to download a big file to work or needs disk space to perform operations, you can use the `/tmp` directory.
+
+- Max size is 512 MB
+- The directory content remains when the execution context is frozen, providing transient cache that can be used for multiple invocations (helpful to checkpoint your work)
+- For permanent persistence of object use S3
+
+### Lambda Concurrency
+
+Concurrency limit: up to 1000 concurrent executions at the account level for each region. If you need a higher limit, open a support ticket.
+
+- Can set a "reserved concurrency" at the function level (=limit).
+- Each invocation over the concurrency limit will trigger a "Throttle"
+- Throttle behavior:
+  - If synchronous invocation => return ThrottleError - 429
+  - If asynchronous => retry automatically and then go to DLQ
+
+#### Lambda Concurrency Issue
+
+If you don't reserve (=limit) concurrency, the following can happen: one Lambda function may occupy all the concurrent executions and all other Lambdas trigger Throttle.
+
+#### Concurrency and Asynchronous Invocations
+
+If the function doesn't have enough concurrency available to process all events, additional request are throttled. For throttling errors (429) and system errors (500-series), Lambda returns the event to the queue and attempts to run the function again for up to 6 hours. The retry interval increases exponentially from 1 second after the first attempt to a maximum of 5 minutes.
+
+### Cold Starts & Provisioned Concurrency
+
+- Cold Start:
+  - New instance => code is loaded and code outside the handler run (init)
+  - If the init is large (code, dependencies, SDK...) this process can take some time
+  - First request served by new instances has higher latency that the rest
+- Provisioned Concurrency
+  - Concurrency is allocated before the function is invoked (in advance)
+  - So the cold start never happens and all invocations have low latency
+  - Application Auto Scaling can manage concurrency (schedule or target utilisation)
+- Note:
+  -  Cold starts in VPC have been dramatically reduced in Oct & Nov 2019
+  - https://aws.amazon.com/blogs/compute/announcing-improved-vpc-networking-for-aws-lambda-functions/
+
+##### [Reserved and Provisioned Concurrency](https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html)
+
+### Lambda Function Dependencies
+
+If your lambda function depends on external libraries, for example AWS X-Ray SDK, Database Clients, etc... You need to install the packages alongside your code and zip it together
+
+- For Node.js, use `npm` & "node_modules" directory
+- For Python, use `pip --target` options
+- For Java, include the relevant `.jar` files
+
+Upload the zip straight to Lambda if less than 50 MB, otherwise to S3 first.
+
+- Native libraries work: they need to be compiled on Amazon Linux
+- AWS SDK comes by default with every Lambda function
+
+### Lambda and CloudFormation
+
+#### Inline
+
+Define a simple Lambda function inline of CloudFormation template using the `Code.ZipFile` property. You cannot include function dependencies with inline functions.
+
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Lambda function inline
+Resource:
+	primer:
+		Type: AWS::Lambda::Function
+		Properties:
+			Runtime: python3.x
+			Role: arn:aws:iam::123456789012:role/lambda-role
+			Handler: index.handler
+			Code:
+				ZipFile: |
+					import os
+					DB_URL = os.getenv("DB_URL")
+					db_client = db.connect(DB_URL)
+					def handler(evene, context):
+						user = db_client.get(user_id = event["user_id"])
+						return user
+```
+
+#### S3
+
+You must store the Lambda zip in S3. You must refer the S3 zip location in the CloudFormation code:
+
+- S3Bucket
+- S3Key: full path to zip
+- S3ObjectVersion: if versioned bucket
+
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Lambda function from #3
+Resource:
+	primer:
+		Type: AWS::Lambda::Function
+		Properties:
+			Runtime: python3.x
+			Role: arn:aws:iam::123456789012:role/lambda-role
+			Handler: index.handler
+			Code:
+				S3Bucket: my-bucket
+				S3Key: function.zip
+				S3ObjectVersion: String
+```
+
+### Lambda Layers
+
+It allows two things:
+
+1. Custom Runtimes
+2. Externalise Dependencies to re-use them
+   - Originally: Application Package1 = app.py + heavy_lib1 files + heavy_lib2 files
+   - With layers: Application Package1 only has app.py 
+     - It reference a lambda Layer 1 with heavy_lib1 files
+     - and a Lambda Layer 2 with heavy_lib2 files
+     - And these layers can be shared with other packages
+
+### Lambda Versions
+
+When you work on a Lambda function, we work on $LATEST (mutable). When we are ready to public a Lambda function, we create a version.
+
+- Versions are immutable (code + configuration)
+- Versions have increasing version numbers
+- Versions get their own ARN
+
+#### Lambda Aliases
+
+Aliases are "pointers" to Lambda function versions. We can define a "dev", "test", "prod" aliases and have them point at different lambda versions.
+
+- Aliases are mutable.
+- Aliases enable Blue/ Green deployment by assigning weights to Lambda Functions. 
+- Aliases enable stable configuration of our event triggers/ destinations
+- Aliases have their own ARNs
+- Aliases cannot reference aliases
+
+### Lambda and CodeDeploy
+
+CodeDeploy can help you automate traffic shift for Lambda aliases. Feature is integrated within the SAM framework.
+
+- AllAtOnce
+- Linear: grow traffic every N minutes until 100%
+  - Linear10PercentEvery3Minutes
+  - Linear10PercentEvery10Minutes
+- Canary: try X percent then 100%
+  - Canary10Percent5minutes
+  - Canary10Percent30minutes
+
+Can create Pre & Post Traffic hooks to check the health of the Lambda function.
+
+### Lambda Limits - per region
+
+- Execution
+  - Memory allocation: 128 MB - 3008MB (64 MB increments)
+  - Maximum execution time: 900 seconds
+  - Environment variables (4 KB)
+  - Disk capacity in the "function container" (in /tmp): 512 MB
+  - Concurrency execution: 1000 (can be increased)
+- Deployment
+  - Lambda function deployment size (compressed .zip): 50 MB
+  - Size of uncompressed deployment (code + dependencies): 250 MB
+  - Can use the /tmp directory to load other files at startup
+  - Size of environment variables: 4 KB
+
+### Lambda Best Practices
+
+- Perform heavy-duty work outside of your function handler, e.g.:
+  - Connect to DB
+  - Initialise the AWS SDK
+  - Pull in dependencies or datasets
+- Use environment variables for:
+  - DB connection Strings, S3 bucket, etc... (don't put these values in your code)
+  - Passwords, sensitive values can be encrypted using KMS
+- Minimise your deployment package size to its runtime necessitties
+  - Break down the function if needed
+  - Remember the AWS Lambda limits
+  - Use Layers where necessary
+- Avoid using recursive code, **never have a Lambda function call itself**!
+
