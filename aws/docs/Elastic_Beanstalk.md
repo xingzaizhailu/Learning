@@ -59,7 +59,7 @@ You have full control over lifecycle of environments:
   - Additional batch is removed at the end of the deployment
   - Longer deployment
   - Good for prod
-  - ![](/Users/leo/workspace/learning/aws/docs/images/Beanstalk_rolling_with_additional_batches.png)
+  - ![](./images/Beanstalk_rolling_with_additional_batches.png)
 - **Immutable:** spins up new instances in a new ASG, deploys version to these instances, and then swaps all the instances when everything is healthy
   - Zero downtime
   - New code is deployed to new instances on a temporary ASG

@@ -138,7 +138,7 @@ From S3, SNS, CloudWatch Events... The events are placed in an `Event Queue`. La
 
 Make sure the processing is idempotent (in case of retries). If the function is retried, you will see duplicate logs entries in CloudWatch Logs. Can define a DLD (Dead-Letter Queue) - SNS or SQS - for failed processing (need correct IAM permissions).
 
-![](/Users/leo/workspace/learning/aws/docs/images/Lambda_Asynchronous_Invocations.png)
+![](./images/Lambda_Asynchronous_Invocations.png)
 
 Asynchronous invocations allows you to speed up the processing if you don't need to wait for the result (ex. you need 1000 files processes).
 
@@ -187,6 +187,8 @@ By default, if your function returns an error, the entire batch is reprocessed u
 - restrict the number of retries
 - split the batch on error (to work around Lambda timeout issues)
 
+![](./images/Lambda_Event_Source_Mapping_with_Kinesis_Stream.png)
+
 #### Queue & Lambda: (SQS & SQS FIFO)
 
 Lambda scales up to process a standard queue as quickly as possible. Lambda also supports in-order processing for FIFO queues, scaling up to the number of active message groups.
@@ -223,7 +225,7 @@ When doing asynchronous invocations or event mapper, it is hard to see if it has
 
 Note: AWS recommends you use destinations instead of DLQ now, because it has more options (but both can be used at the same time)
 
-![](/Users/leo/workspace/learning/aws/docs/images/Lambda_Destination_for_Sync_invokations.png)
+![](./images/Lambda_Destination_for_Sync_invokations.png)
 
 [**Event Source mapping:**](https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html) for discarded event batches:
 

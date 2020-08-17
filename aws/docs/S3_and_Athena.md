@@ -320,7 +320,7 @@ For long term storage (Minimum storage duration of 180 days) - cheaper:
 - Standard (12 hours)
 - Bulk (48 hours)
 
-![](/Users/leo/workspace/learning/aws/docs/images/S3_storage_classes.png)
+![](./images/S3_storage_classes.png)
 
 #### Amazon S3 Reduced Redundancy Storage (deprecated - omitted)
 
@@ -328,7 +328,7 @@ For long term storage (Minimum storage duration of 180 days) - cheaper:
 
 You can transition objects between storage classes as illustrated bellow:
 
-![](/Users/leo/workspace/learning/aws/docs/images/S3_object_trainsition.png)
+![](./images/S3_object_trainsition.png)
 
 - Move infrequently accessed object into "STANDARD_IA"
 - Move archive objects that don't need in real-time to "GLACIER" or "DEEP_ARCHIVE"

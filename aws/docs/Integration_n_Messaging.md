@@ -216,7 +216,7 @@ A managed alternative to Apache Kafka.
 
 **Kinesis Firehose:** load streams into S3, Redshift, ElasticSearch...
 
-![](/Users/leo/workspace/learning/aws/docs/images/Kinesis.png)
+![](./images/Kinesis.png)
 
 #### Kinesis Streams
 
@@ -312,5 +312,5 @@ Perform real-time analytics on Kinesis Streams using SQL. You pay for actual con
 
 ### SQS vs SNS vs Kinesis
 
-![](/Users/leo/workspace/learning/aws/docs/images/SQS_vs_SNS_vs_Kinesis.png)
+![](./images/SQS_vs_SNS_vs_Kinesis.png)
 

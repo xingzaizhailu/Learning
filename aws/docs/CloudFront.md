@@ -104,7 +104,7 @@ How long should the URL be valid for?
 
 ##### CloudFront Signed URL Diagram
 
-![](/Users/leo/workspace/learning/aws/docs/images/CloudFront_signed_URL_diagram.png)
+![](./images/CloudFront_signed_URL_diagram.png)
 
 #### CloudFront Signed URL vs S3 Pre-Signed URL
 
