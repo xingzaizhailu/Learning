@@ -68,7 +68,7 @@ Add and set the following additional properties to a `Project` object:
 - features
 - cleanup - Set up the projects cleanup rules
 
-#### Adding BuildTypes
+#### [Adding BuildTypes](./BuildTypes.md)
 
 ```kotlin
 package _Self
