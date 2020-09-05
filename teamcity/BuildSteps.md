@@ -80,3 +80,55 @@ steps {
 }
 ```
 
+## [Customizing Build Steps](https://teamcity.jetbrains.com/app/dsl-documentation/jetbrains.build-server.configs.kotlin.v2019_2/-build-steps/index.html)
+
+To create customized build steps in TeamCity, you need to know what type of build step you will be customizing. The list of available steps [here](https://teamcity.jetbrains.com/app/dsl-documentation/jetbrains.build-server.configs.kotlin.v2019_2.build-steps/index.html).
+
+### Creating Custom Build Step
+
+```kotlin
+package _Self.buildSteps
+
+import jetbrains.buildServer.configs.kotlin.v2019_2.BuildSteps
+import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.ScriptBuildStep
+
+class CustomStep : ScriptBuildStep() {
+    lateinit var param1: String
+    lateinit var param2: String
+
+    constructor(init: CustomStep.() -> Unit) : this() {
+        init()
+
+        name = "Custom Step"
+        scriptContent = "echo 'custom step'"
+    }
+}
+
+fun BuildSteps.customStep(init: CustomStep.() -> Unit) : CustomStep {
+    val result = CustomStep(init)
+    step(result)
+    return result
+}
+```
+
+### Using Custom Build Step
+
+```kotlin
+package _Self.buildTypes
+
+import _Self.buildSteps.customStep
+
+import jetbrains.buildServer.configs.kotlin.v2018_2.BuildType
+
+object SampleBuild : BuildType({
+    id("SampleBuild")
+    ...
+
+    steps {
+        customStep {
+            param1 = "hello"
+            param2 = "hi"
+        }
+    }
+})
+```
