@@ -66,3 +66,12 @@
   - `docker system prune -a --volumes`
     - `-a` is short for `--all`. Delete unused images, [not just dangling ones](https://stackoverflow.com/a/45143234/4590385).
     - `--volumes` Remove unused volumes. We’ll talk more about volumes in the next article.
+
+### [Use Prune to keep docker system clean](https://youtu.be/_4QzP7uwtvI)
+
+Use `prune` to clean up images, volumes, build cache and containers.
+
+- `docker image prune` - clean up "dangling" images
+  - `docker image prune -a` - remove all images not using
+  - Use `docker system df` to see space usage
+- `docker system prune` - clean up everything
