@@ -17,25 +17,33 @@ How to:
 
 Previously, you took an app you wrote, and defined how it should run in production by turning it into a service, scaling it up 5x in the process.  
 
-Here, you deploy this application onto a cluster, running it on multiple machines. Multi-container, multi-machine applications are made possible by joining multiple machines into a “Dockerized” cluster called a swarm.
+Here, you deploy this application onto a cluster, running it on multiple machines. Multi-container, multi-machine applications are made possible by joining multiple machines into a “Dockerized” cluster called a **swarm**.
 
 ### Understanding Swarm clusters
 
-A swarm is a group of machines that are running Docker and joined into a cluster. After that has happened, you continue to run the Docker commands you’re used to, but now they are executed on a cluster by a swarm manager. The machines in a swarm can be physical or virtual. After joining a swarm, they are referred to as nodes.  
+A swarm is a group of machines that are running Docker and joined into a cluster. After that has happened, you continue to run the Docker commands you’re used to, but now they are executed on a cluster by a swarm manager. The machines in a swarm can be physical or virtual. After joining a swarm, they are referred to as **nodes**.  
 
-Swarm managers can use several strategies to run containers, such as *“emptiest node”* – which fills the least utilized machines with containers. Or *“global”*, which ensures that each machine gets exactly one instance of the specified container. You instruct the swarm manager to use these strategies in the Compose file, just like the one you have already been using.  
+Swarm managers can use several *strategies* to run containers, such as *“emptiest node”* – which fills the least utilized machines with containers. Or *“global”*, which ensures that each machine gets exactly one instance of the specified container. You instruct the swarm manager to use these strategies in the Compose file, just like the one you have already been using.  
 
 Swarm managers are the only machines in a swarm that can execute your commands, or authorize other machines to join the swarm as workers. Workers are just there to provide capacity and do not have the authority to tell any other machine what it can and cannot do.  
 
 ### Set up your swarm
 
-A swarm is made up of multiple nodes, which can be either physical or virtual machines. The basic concept is simple enough: run `docker swarm init` to enable swarm mode and make your current machine a swarm manager, then run `docker swarm join` on other machines to have them join the swarm as workers.  
+A **swarm** is made up of multiple nodes, which can be either physical or virtual machines. The basic concept is simple enough: run `docker swarm init` to enable swarm mode and make your current machine a swarm manager, then run `docker swarm join` on other machines to have them join the swarm as workers.  
+
+Once enabled, there will be more commands:
+
+- `docker swarm`
+- `docker node`
+- `docker service`
+- `docker stack`
+- `docker secret`
 
 #### Create a cluster
 
 First, you’ll need a hypervisor that can create virtual machines (VMs), so install Oracle VirtualBox for your machine’s OS.  
 
-Now, create a couple of VMs using docker-machine, using the VirtualBox driver:
+Now, create a couple of VMs using `docker-machine`, using the VirtualBox driver:
 
 ```shell
 $ docker-machine create --driver virtualbox node1
@@ -97,8 +105,21 @@ rihwohkh3ph38fhillhhb84sk *   node1           Ready         Active          Lead
 If you want to make node2 also a manager, you could use
 
 ``` shell
-$ docker node update --role manager
+$ docker node update --role manager node2
 ```
+
+A manager node has components (Raft):
+
+- API: Accepts commands from client and creates service object
+- Orchestrator: Reconciliation loop for service objects and creates tasks
+- Allocator: Allocates IP addresses to tasks
+- Scheduler: Assigns nodes to tasks
+- Dispatcher: checks in on workers
+
+A worker node has:
+
+- Worker: Connects to dispatcher to check on assigned tasks
+- Executor: Executes the tasks assigned to worker node
 
 ### Deploy your app on the swarm cluster
 
@@ -163,9 +184,9 @@ ghii74p9budx  getstartedlab_web.4   john/get-started:part2  node1  Running
 ```
 
 ##### Connecting to VMs with docker-machine env and docker-machine ssh
-- To set your shell to talk to a different machine like node2, simply re-run docker-machine env in the same or a different shell, then run the given command to point to node2. This is always specific to the current shell. If you change to an unconfigured shell or open a new one, you need to re-run the commands. Use docker-machine ls to list machines, see what state they are in, get IP addresses, and find out which one, if any, you are connected to. To learn more, see the Docker Machine getting started topics.
+- To set your shell to talk to a different machine like node2, simply re-run docker-machine env in the same or a different shell, then run the given command to point to node2. This is always specific to the current shell. If you change to an unconfigured shell or open a new one, you need to re-run the commands. Use `docker-machine ls` to list machines, see what state they are in, get IP addresses, and find out which one, if any, you are connected to.
 - Alternatively, you can wrap Docker commands in the form of docker-machine ssh <machine> "<command>", which logs directly into the VM but doesn’t give you immediate access to files on your local host.
-- On Mac and Linux, you can use docker-machine scp <file> <machine>:~ to copy files across machines, but Windows users need a Linux terminal emulator like Git Bash in order for this to work. This tutorial demos both docker-machine ssh and docker-machine env, since these are available on all platforms via the docker-machine CLI.
+- On Mac and Linux, you can use `docker-machine scp <file> <machine>:~` to copy files across machines, but Windows users need a Linux terminal emulator like Git Bash in order for this to work. This tutorial demos both docker-machine ssh and docker-machine env, since these are available on all platforms via the docker-machine CLI.
 
 #### Accessing your cluster
 You can access your app from the IP address of either node1 or node2. Run `docker-machine ls` to get your VMs’ IP addresses. Having connectivity trouble?
@@ -186,7 +207,7 @@ You can tear down the stack with docker stack rm. For example:
 $ docker stack rm getstartedlab
 ```
 
-docker-machine ssh node2 "docker swarm leave" on the worker and docker-machine ssh node1 `docker swarm leave --force` on the manager
+`docker-machine ssh node2 "docker swarm leave"` on the worker and `docker-machine ssh node1 docker swarm leave --force` on the manager
 
 #### Unsetting docker-machine shell variable settings
 
@@ -223,13 +244,7 @@ Detecting the provisioner...
 Started machines may have new IP addresses. You may need to re-run the `docker-machine env` command.
 
 $ docker-machine start node2
-Starting "node2"...
-(node2) Check network to re-create if needed...
-(node2) Waiting for an IP...
-Machine "node2" was started.
-Waiting for SSH to be available...
-Detecting the provisioner...
-Started machines may have new IP addresses. You may need to re-run the `docker-machine env` command.
+...
 ```
 
 #### Commands this part
@@ -257,3 +272,6 @@ $ eval $(docker-machine env -u)     # Disconnect shell from VMs, use native dock
 $ docker-machine stop $(docker-machine ls -q)               # Stop all running VMs
 $ docker-machine rm $(docker-machine ls -q) # Delete all VMs and their disk images
 ```
+
+
+
