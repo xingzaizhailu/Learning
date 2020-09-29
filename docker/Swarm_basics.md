@@ -10,7 +10,7 @@ Swarm-wide bridge network driver where containers can communicate across nodes.
 - For container-to-container traffic inside a single Swarm
 - Optional IPSec (AES) encryption on network creation
 - Each service can be connected to multiple networks
-  - e.g. front end and back end
+  - e.g. front-end and back-end
 
 ```sh
 $ docker network create --driver ovlerlay mydrupal
@@ -29,6 +29,8 @@ And no matter which node `mydrupal` is deployed to, you can visit it by any of t
 
 ### Routing Mesh
 
+What makes `mydrupal` available from any of the nodes.
+
 - Routes ingress (incoming) packages for a Service to proper Task
 - Spans all nodes in Swarm
 - Uses IPVS from Linux Kernel
@@ -39,7 +41,11 @@ And no matter which node `mydrupal` is deployed to, you can visit it by any of t
 
 ``` sh
 $ docker service create --name search --replicas 3 -p 9200:9200 elasticsearch:2
+$ docker service ps search
+$ curl localhost:9200		# multiple times
 ```
+
+#### Routing Mesh Cout.
 
 - This is stateless load balancing
 - The LB is at OSI Layer 3 (TCP), not Layer 4 (DNS)
