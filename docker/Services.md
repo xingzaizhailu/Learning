@@ -1,5 +1,7 @@
 ## Services
 
+
+
 ### About Services
 
 In a distributed application, different pieces of the app are called “services.” Services are really just “containers in production.” A service only runs one image, but it codifies the way that image runs—what ports it should use, how many replicas of the container should run so the service has the capacity it needs, and so on. Scaling a service changes the number of container instances running that piece of software, assigning more computing resources to the service in the process.
@@ -8,10 +10,20 @@ In a distributed application, different pieces of the app are called “services
 
 ``` shell
 $ docker service create alpine # create a service with a instance of alpine image
-$ Docker service ps name
+$ docker service ls
+$ docker service ps name
+
 $ docker service update <ID> —replicas 3    # scale up
-$ Docker container rm -f <name>.1.<ID>      # new instance will be automatically launched after a instance fail
-$ Docker service rm service_name
+$ docker service ls
+$ docker service ps <service_name>
+$ docker container ls
+
+$ docker container rm -f <name>.1.<ID>      # new instance will be automatically launched after a instance fail
+$ docker service ls # multiple times, you will see new instance automatically being created
+$ docker service ps <service_name>					# will be able to see the history
+
+$ docker service rm service_name
+$ docker container ls
 ```
 
 ### Using `docker-compose.yml` file
