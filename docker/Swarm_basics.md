@@ -52,3 +52,70 @@ $ curl localhost:9200		# multiple times
 - Both limitation can be overcome with:
   - Nginx or HAProxy LB proxy, or
   - Docker Enterprise Edition, which comes with built-in L4 web proxy
+
+### Secrets Storage for Swarm 
+
+- Only stored on disk on Manager nodes
+- Secrets are first stored in Swarm, then assigned to a Service(s)
+- Only containers in assigned Service(s) can see them
+- They look like files in container but are actually in-memory file system
+  - /run/secretes/<secret_name> or /run/secrets/<secret_alias>
+- Local docker-compose can use file-based secrets, but not secure
+
+#### Using secrets in Swarm Services
+
+```sh
+# file based
+$ cat psql_user.txt
+mypsqluser
+$ docker secret create psql_user psql_user.txt
+# or CLI
+$ echo "myDBpassWORD" | docker secret create psql_pass -
+$ docker secret ls
+```
+
+```sh
+$ docker sevice create --name psql --secret psql_user --secret psql_pass \
+	-e POSTGRES_PASSWORD_FILE=/run/secrets/psql_pass \
+	-e POSTGRES_USER_FILE=/run/secrets/psql_user postgres
+$ docker service update --secret-rm
+```
+
+#### Using secrets in Swarm Stacks
+
+Create a `docker-compose.yml` file:
+
+``` yaml
+version: "3.1"
+
+services:
+	psql:
+		image: postgres
+		secrets:
+			- psql_user
+			- psql_password
+		environment:
+			POSTGRES_PASSWORD_FILE: /run/secrets/psql_password
+			POSTGRES_USER_FILE: /run/secrets/psql_user
+
+secrets:
+  psql_user:
+	  file: ./psql_user.txt
+  psql_password:
+  	external: true
+```
+
+``` sh
+docker stack deploy -c docker-compose.yml mydb
+```
+
+#### Using secrets with local docker compose
+
+``` sh
+# under folder where saves previous `docker-compose.yml`
+$ docker-compose up -d
+# cat secrets, but only works for file based secrets
+$ docker-compose exec psql cat /run/secrets/psql_user
+dbuser
+```
+
