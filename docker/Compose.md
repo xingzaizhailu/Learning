@@ -93,3 +93,142 @@ services:
 		volumes:
 ```
 
+### Full app lifecycle with Compose
+
+Single set of compose files for:
+
+- Local `docker-compose up` for development environment
+- Remote `docker-compose up` for CI environment
+- Remote `docker stack deploy` for production environment
+
+These files are:
+
+- default `docker-compose.yml` file
+- `docker-compose.override.yml`: `docker-compose` will automatically bring this up if the file is named exactly like this, i.e. this file override what's in `docker-compose.yml`
+- `docker-compose.test.yml`
+- `docker-compose.prod.yml`
+
+default `docker-compose.yml` file:
+
+``` yaml
+version: '3.1'
+
+services:
+	drupal:
+		image: bretfisher/custom-drupal:latest
+	postgres:
+		image: postgres:9.6
+
+```
+
+`docker-compose.override.yml`
+
+```yaml
+version: '3.1'
+
+services:
+	drupal:
+		# because image name already specified in `docker-compose.yml` file
+		build: .
+		ports:
+			- "8080:80"
+		volumes:
+			- drupal-modules:/var/www/html/modules
+      - drupal-profiles:/var/www/html/profiles
+      - drupal-sites:/var/www/html/sites
+      - ./themes:/var/www/html/themes
+
+  postgres:
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/psql_password
+    secrets:
+      - psql_password
+    volumes:
+      - drupal-data:/var/lib/postgresql/data
+
+volumes:
+  drupal-modules:
+  drupal-profiles:
+  drupal-sites:
+  drupal-themes:
+  drupal-data:
+
+secrets:
+  psql_password:
+    file: psql-fake-password.txt
+```
+
+`docker-compose.test.yml`:
+
+``` yaml
+version: '3.1'
+
+services:
+	drupal:
+		image: bretfisher/custom-drupal
+		build: .
+		ports:
+			- "80:80"
+
+	postgres:
+		environment:
+			- POSTGRES_PASSWORD_FILE=/run/secrets/psql_password
+		secrets:
+			- psql_password
+		volumes:
+			- ./sample-data:/var/lib/postgresql/data
+
+secrets:
+	psql_password:
+		file: psql-fake-password.txt
+```
+
+`docker-compose.prod.yml`:
+
+``` yaml
+version: '3.1'
+
+services:
+	drupal:
+		ports:
+			- "80:80"
+		volumes:
+			- drupal-modules:/var/www/html/modules
+      - drupal-profiles:/var/www/html/profiles
+      - drupal-sites:/var/www/html/sites
+      - drupal-themes:/var/www/html/themes
+
+  postgres:
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/psql_password
+    secrets:
+      - psql_password
+    volumes:
+      - drupal-data:/var/lib/postgresql/data
+
+volumes:
+  drupal-modules:
+  drupal-profiles:
+  drupal-sites:
+  drupal-themes:
+  drupal-data:
+
+secrets:
+  psql_password:
+    external: true
+```
+
+``` sh
+# development
+$ docker-compose up -d # run docker-compose.yml and overlay docker-compose.override.yml on top
+# could try `docker inspect <drupal_service>`, you'll see all settings from override file
+
+# CI
+$ docker-compose -f docker-compose -f docker-compose.yml -f docker-compose.test.yml up -d
+# try `docker inspect <drupal_service>` again
+$ docker-compose -f docker-compose.yml -f docker-compose.prod.yml config > output.yml
+
+# Deploy
+$ docker stack deploy output.yml
+```
+
