@@ -1,7 +1,5 @@
 ## Services
 
-
-
 ### About Services
 
 In a distributed application, different pieces of the app are called “services.” Services are really just “containers in production.” A service only runs one image, but it codifies the way that image runs—what ports it should use, how many replicas of the container should run so the service has the capacity it needs, and so on. Scaling a service changes the number of container instances running that piece of software, assigning more computing resources to the service in the process.
@@ -137,3 +135,4 @@ $ docker container ls -q                                      # List container I
 $ docker stack rm <appname>                             # Tear down an application
 $ docker swarm leave --force      # Take down a single node swarm from the manager
 ```
+
