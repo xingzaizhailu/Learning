@@ -101,7 +101,66 @@ So don't write synchronous code between Cypress commands, wrap them in a `.then(
 
 ### Assertions
 
-TODO
+#### Default Assertions
+
+- `cy.visit()` expects the page to send `text/html` content with a `200` status code
+- `cy.request()` expects the remote server to exist and provide a response
+- `cy.get()`,   `cy.contains()` and `.find()` expect the element to eventually exist in the DOM
+- `.type()` expects eventually typeable
+- `.its()` expects to eventually find a property on the current subject
+
+#### Reversing the default Assertion
+
+```javascript
+// wait until this button is not in the DOM after the click
+cy.get('button.close').click().should('not.exist')
+```
+
+#### Writing Assertions
+
+Two ways
+
+1. Implicit Subjects: Using `.should()` or `.and()`
+2. Explicit Subjects: Using `expect`
+   1. When to use?
+      1. Assert multiple things about the same subject
+      2. Massage the subject in some way prior to making the assertion
+
+##### A complex example
+
+```javascript
+cy.get('p')
+  .should(($p) => {
+    // massage our subject from a DOM element
+    // into an array of texts from all of the p's
+    let texts = $p.map((i, el) => {
+      return Cypress.$(el).text()
+    })
+
+    // jQuery map returns jQuery object
+    // and .get() converts this to an array
+    texts = texts.get()
+
+    // array should have length of 3
+    expect(texts).to.have.length(3)
+
+    // with this specific content
+    expect(texts).to.deep.eq([
+      'Some text from first p',
+      'More text from second p',
+      'And even more text from third p'
+    ])
+  })
+```
 
 ### Timeouts
+
+Timeouts can be modified per command and this will affect all default assertions and any assertions chained after that command.
+
+```javascript
+// we've modified the timeout which affects default + added assertions
+cy.get('.mobile-nav', { timeout: 10000 })			// waits up to 10 seconds for it to exist in the DOM
+  .should('be.visible')												// waits up to 10 seconds for it to be visible
+  .and('contain', 'Home')											// waits up to 10 seconds for it to contain the text: ‘Home’
+```
 
