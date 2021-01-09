@@ -102,6 +102,12 @@ The merging is shallow, so `this.setState({comments})` leaves `this.state.posts`
 4. `render()` will be called again when state changes. React updates the DOM accordingly.
 5. `componentWillUnmount()` lifecycle method is called when the component is ever removed from the DOM.
 
+#### Others
+
+- `componentWillReceivePorps(nextProps) {}`
+- `shouldComponentUpdate(nextProps, nextState) {}`  - should return `true` or `false`
+- `componentDidUpdate(prevProps, prevState) {}`
+
 ### [Handling Events](https://reactjs.org/docs/handling-events.html)
 
 Handling events with React elements is very similar to handling events on DOM elements. There are some syntax differences:
@@ -116,3 +122,57 @@ Handling events with React elements is very similar to handling events on DOM el
 3. `... ? ... : ...`
 
 **Tip:** You can use a prop to show or hide (return `null`) a component.
+
+### List and Keys
+
+- Don't use index as keys if the order of items may change.
+
+- A good rule of thumb is that elements inside the `map()` call need keys
+  - e.g. put key in your extracted component `<ListItem />` rather than the element `<li>`. 
+
+- Keys Must Only Be Unique Among Siblings
+
+### Forms
+
+#### Controlled Components
+
+In HTML, form elements such as `<input>`, `<textarea>`, and `<select>` typically maintain their own state and update it based on user input. In React, mutable state is typically kept in the state property of components, and only updated with [`setState()`](https://reactjs.org/docs/react-component.html#setstate).
+
+We can combine the two by making the React state be the “single source of truth”. Then the React component that renders a form also controls what happens in that form on subsequent user input. An input form element whose value is controlled by React in this way is called a **“controlled component”**.
+
+```javascript
+class NameForm extends React.Component {
+  ...
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Name:
+          <input type="text" value={this.state.value} onChange={this.handleChange} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    );
+  }
+}
+```
+
+#### The `select` tag
+
+```javascript
+<select value={this.state.value} onChange={this.handleChange}>
+	<option value="grapefruit">Grapefruit</option>
+  <option value="lime">Lime</option>
+  <option value="mango">Mango</option>
+</select>
+
+<select multiple={true} value={['B', 'C']}>
+```
+
+#### [Uncontrolled Components](https://reactjs.org/docs/uncontrolled-components.html)
+
+#### [Formik](https://formik.org)- A Fully-Fledged Solutions
+
+### Lifting State Up
+
