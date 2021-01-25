@@ -27,6 +27,7 @@ Custom operator: `:h:map-operator`. e.g. `\\` in *commentary.vim* for comment.
 
 ### Motion
 `h, j, k, l, /, ?, w, e, b`
+`it`: between tags
 e.g. `2?the`
 `/pattern<CR>` and `?pattern<CR>`
 
@@ -68,3 +69,11 @@ It's activated after operator is hit, waiting for motion. The mode between hits 
     - e.g. `<C-k><<`, `<C-k>13`, `<C-k>?|`
 
 ## Visual Mode
+`v`: character
+`V`: line
+`<C-v>`: block
+`gv`: reselect last high lighted area
+
+`<Esc>` or `<C-[>`: back to normal mode
+`o`: toggle active end of high lighted area
+(`b`, `e` is still usable in Visual mode
