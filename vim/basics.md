@@ -10,17 +10,17 @@
 
 ## Normal mode
 ### Operator
-| Operator | Description | Tips |
-| --- | --- | --- |
-| `c` | Change | `C == c$`, `c<Number>w` instead of `d<Number>wa` |
-| `d` | Delete | Delete a word: `daw` (Including a blank), Delete a paragraph: `dap` |
-| `y` | Copy to register |
-| `g~` | Flip case |
-| `gu` | To lowercase | `guaw` |
-| `gU` | To uppercase | `gUap` |
-| `>` | Add indentation |
-| `<` | Reduce indentation |
-| `=` | Auto indentation |
+| Operator | Description        | Tips   |
+| -------- | ------------------ | ------ |
+| `c`      | Change             | `C == c$`, `c<Number>w` instead of `d<Number>wa` |
+| `d`      | Delete             | Delete a word: `daw` (Including a blank), Delete a paragraph: `dap` |
+| `y`      | Copy to register   |
+| `g~`     | Flip case          |
+| `gu`     | To lowercase       | `guaw` |
+| `gU`     | To uppercase       | `gUap` |
+| `>`      | Add indentation    |
+| `<`      | Reduce indentation |
+| `=`      | Auto indentation   |
 Others: `!, gq, g?, zf, g@`
 
 Custom operator: `:h:map-operator`. e.g. `\\` in *commentary.vim* for comment.
@@ -69,11 +69,33 @@ It's activated after operator is hit, waiting for motion. The mode between hits 
     - e.g. `<C-k><<`, `<C-k>13`, `<C-k>?|`
 
 ## Visual Mode
-`v`: character
-`V`: line
-`<C-v>`: block
-`gv`: reselect last high lighted area
+| Command            | Description                       |
+| ------------------ | --------------------------------- |
+| `v`                | character                         |
+| `V`                | line                              |
+| `<C-v>`            | block                             |
+| `gv`               | reselect last high lighted area   |
+| `<Esc>` or `<C-[>` | back to normal mode               |
+| `o` toggle active end of high lighted area             |
 
-`<Esc>` or `<C-[>`: back to normal mode
-`o`: toggle active end of high lighted area
-(`b`, `e` is still usable in Visual mode
+`b`, `e` is still usable in Visual mode
+
+## Command Line Mode
+Vim provides Ex commands for almost all functions. Get the full list by `:h ex-cmd-index`.
+Ex commands are power to process multiple lines at once without moving the cursor.
+Enter by `:`.
+
+| Comman                                        | Description |
+| --------------------------------------------- | ----------- |
+| :[range]delete [x]                            | delete what's in range [to the register x]    |
+| :[range]yank [x]                              | copy what's in range [to the register x]      |
+| :[line]put [x]                                | paste what's in the register x after the line |
+| :[range]copy {address}                        | copy what in range to address                 |
+| :[range]move {address}                        | move what in range to address                 |
+| :[range]join                                  | join what's in range                          |
+| :[range]normal {commands}                     | excecute normal mode command {commands} to every line of the range |
+| :[range]substitute/{pattern}/{string}/[flags] | Replace all matched {pattern} in the range with {string}           |
+| :[range]global/{pattern}/[cmd]                | Execute {cmd} on all matched {pattern} in the range                |
+
+
+### `[range]`
